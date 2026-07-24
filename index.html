@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+ <title>FAIRRICH | Professional Machinery Manufacturing</title>
+    <link rel="icon" type="image/png" href="image/logo.jpg">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: #1e3a5f;
+      color: #fff;
+      overflow: hidden;
+    }
+    .hero-container {
+      width: 100vw; height: 100vh;
+      position: relative; overflow: hidden;
+    }
+    .hero-slides {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .hero-slide {
+      min-width: 100%; height: 100%;
+      background-size: cover; background-position: center;
+      position: relative;
+    }
+    .hero-slide:nth-child(1) { background-image: url('image/photo2.png'); }
+    .hero-slide:nth-child(2) { background-image: none; }
+    .hero-slide:nth-child(3) { background-image: url('image/seven.png'); }
+    .hero-slide:nth-child(4) { background: #000; }
+.hero-slide::after {
+  content: '';
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px),
+        linear-gradient(135deg, rgba(15,36,64,0.75) 0%, rgba(30,58,95,0.35) 50%, rgba(15,36,64,0.6) 100%);
+    }
+    .hero-info {
+      position: absolute; left: 60px; bottom: 120px;
+      z-index: 10; max-width: 600px;
+    }
+    .hero-info .slide-title {
+      font-size: 3.2rem; font-weight: 800; letter-spacing: 2px;
+      margin-bottom: 12px; text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .hero-info .slide-desc {
+      font-size: 1.1rem; opacity: 0.85; line-height: 1.7;
+      margin-bottom: 24px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .hero-info .slide-btn {
+      display: inline-block; padding: 14px 32px;
+      background: transparent; border: 2px solid rgba(255,255,255,0.6);
+      color: white; font-size: 0.95rem; font-weight: 600;
+      letter-spacing: 1px; cursor: pointer; transition: all 0.3s; text-decoration: none;
+    }
+    .hero-info .slide-btn:hover { background: white; color: #0a0f1a; border-color: white; }
+    .hero-nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100; display: flex; justify-content: space-between;
+      align-items: center; padding: 24px 40px;
+    }
+    .hero-logo {
+      font-size: 1.6rem; font-weight: 800; letter-spacing: 2px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .hero-logo span { font-weight: 300; opacity: 0.7; }
+    .hero-nav-links { display: flex; gap: 32px; align-items: center; }
+    .hero-nav-links a {
+      color: rgba(255,255,255,0.8); text-decoration: none;
+      font-size: 0.9rem; font-weight: 500; letter-spacing: 1px; transition: color 0.3s;
+    }
+    .hero-nav-links a:hover { color: white; }
+    .hero-indicators {
+      position: absolute; right: 40px; top: 50%;
+      transform: translateY(-50%); z-index: 10;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .hero-indicators span {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(255,255,255,0.3); cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.4); transition: all 0.3s;
+    }
+    .hero-indicators span.active { background: #4a8fd4; border-color: #4a8fd4; transform: scale(1.3); }
+    .scroll-indicator {
+      position: absolute; bottom: 30px; left: 50%;
+      transform: translateX(-50%); z-index: 10;
+      font-size: 0.8rem; opacity: 0.6; letter-spacing: 2px;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+    .lang-select-wrap { position: relative; }
+    .lang-select-wrap select {
+      padding: 8px 12px; border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 4px; background: rgba(0,0,0,0.4); color: white;
+      font-size: 0.8rem; cursor: pointer; outline: none;
+      font-family: inherit; backdrop-filter: blur(10px);
+    }
+    @media (max-width: 768px) {
+      .hero-info { left: 24px; bottom: 100px; max-width: 90%; }
+      .hero-info .slide-title { font-size: 2rem; }
+      .hero-nav { padding: 16px 20px; }
+      .hero-nav-links { display: none; }
+      .hero-indicators { right: 16px; gap: 10px; }
+    }
+    /* ========== 多图网格背景 ========== */
+.hero-slide-grid {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 4px;
+  padding: 4px;
+  z-index: 1;
+  filter: blur(6px) brightness(0.55);
+  animation: gridPulse 8s ease-in-out infinite;
+}
+.hero-slide-grid .grid-img {
+  background-size: cover;
+  background-position: center;
+  border-radius: 4px;
+}
+@keyframes gridPulse {
+  0%, 100% { filter: blur(6px) brightness(0.55); }
+  50% { filter: blur(4px) brightness(0.65); }
+}
+/* ========== 第4页 - 经纬线平移背景 ========== */
+.hero-slide[data-index="3"] {
+  background: #000;
+  overflow: hidden;
+}
+/* 经纬线网格 */
+.meridian-grid {
+  position: absolute; top: 0; left: 0;
+  width: 300%; height: 100%;
+  background-image:
+    /* 纬线 - 水平线 */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 39px,
+      rgba(30, 80, 140, 0.25) 39px,
+      rgba(30, 80, 140, 0.25) 40px
+    ),
+    /* 经线 - 竖直线 */
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 59px,
+      rgba(30, 80, 140, 0.25) 59px,
+      rgba(30, 80, 140, 0.25) 60px
+    ),
+    /* 赤道 - 加亮 */
+    linear-gradient(
+      180deg,
+      transparent calc(50% - 1px),
+      rgba(60, 130, 200, 0.5) calc(50% - 1px),
+      rgba(60, 130, 200, 0.5) calc(50% + 1px),
+      transparent calc(50% + 1px)
+    ),
+    /* 本初子午线标记 */
+    linear-gradient(
+      90deg,
+      transparent calc(33.33% - 1px),
+      rgba(60, 130, 200, 0.4) calc(33.33% - 1px),
+      rgba(60, 130, 200, 0.4) calc(33.33% + 1px),
+      transparent calc(33.33% + 1px)
+    );
+  background-size: 100% 100%;
+  animation: gridDrift 30s linear infinite;
+  z-index: 1;
+}
+/* 深色渐变遮罩 - 上下边缘渐暗 */
+.meridian-vignette {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+/* 金色光点 */
+.meridian-dot {
+  position: absolute;
+  width: 4px; height: 4px;
+  background: radial-gradient(circle, #ffd700 0%, #b8860b 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 10px 4px rgba(255, 215, 0, 0.5), 0 0 25px 8px rgba(255, 180, 0, 0.2);
+  pointer-events: none;
+  z-index: 3;
+  animation: dotFlicker var(--d) ease-in-out infinite;
+}
+@keyframes gridDrift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+@keyframes dotFlicker {
+  0%, 100% { opacity: 0.15; transform: scale(0.5); }
+  30% { opacity: 1; transform: scale(1.5); }
+  60% { opacity: 0.3; transform: scale(0.8); }
+}
+  </style>
+</head>
+<body>
+
+<div class="hero-container" id="heroContainer">
+  <div class="hero-slides" id="heroSlides">
+    <div class="hero-slide" data-index="0"></div>
+    <div class="hero-slide" data-index="1"></div>
+    <div class="hero-slide" data-index="2"></div>
+    <div class="hero-slide" data-index="3"></div>
+  </div>
+  <div class="hero-nav">
+      <div class="hero-logo">FAIRRICH</div>
+    <div class="hero-nav-links">
+      <a href="#" onclick="scrollToSlide(1)" id="navProducts">产品</a>
+      <a href="#" onclick="scrollToSlide(2)" id="navTech">技术</a>
+      <a href="#" onclick="scrollToSlide(3)" id="navService">服务</a>
+      <a href="2.html" id="navLearnMore">了解更多</a>
+      <div class="lang-select-wrap">
+    <select id="coverLangSelect">
+        <option value="zh">🇨🇳 中文</option>
+        <option value="en">🇬🇧 English</option>
+    </select>
+      </div>
+    </div>
+  </div>
+  <div class="hero-info" id="heroInfo">
+    <div class="slide-title" id="slideTitle">精密工业设备</div>
+    <div class="slide-desc" id="slideDesc">数控折弯机 · 激光切割机 · 水切割机<br>高精度加工，全球50+国家信赖</div>
+    <a class="slide-btn" id="slideBtn" href="javascript:void(0)">联系我们 →</a>
+  </div>
+  <div class="hero-indicators" id="heroIndicators">
+    <span class="active" data-index="0"></span>
+    <span data-index="1"></span>
+    <span data-index="2"></span>
+    <span data-index="3"></span>
+  </div>
+  <div class="scroll-indicator">◆ 滑动浏览 ◆</div>
+</div>
+
+<!-- ========== 留言咨询弹窗 ========== -->
+<div id="inquiryOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:none;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:8px;padding:32px;width:90%;max-width:460px;position:relative;">
+    <span id="inqCloseBtn" style="position:absolute;top:14px;right:18px;cursor:pointer;font-size:1.5rem;color:#94a3b8;">✕</span>
+    <h3 style="font-size:1.3rem;color:#0f172a;margin-bottom:4px;text-align:center;">📋 留言咨询</h3>
+    <p style="text-align:center;color:#64748b;font-size:0.85rem;margin-bottom:16px;">
+      📞 0086 21 5763 5090 &nbsp;|&nbsp; 📧 info@fairrich.com
+    </p>
+    <input type="text" id="inqName" placeholder="您的姓名 / Your Name" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:0.95rem;margin-bottom:12px;font-family:inherit;">
+    <input type="email" id="inqEmail" placeholder="您的邮箱 / Your Email" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:0.95rem;margin-bottom:12px;font-family:inherit;">
+    <textarea id="inqMessage" placeholder="请描述您的需求 / Message" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:0.95rem;min-height:100px;font-family:inherit;resize:vertical;margin-bottom:12px;"></textarea>
+    <button id="inqSendBtn" style="width:100%;padding:12px;background:#1e3a5f;color:white;border:none;border-radius:6px;font-size:1rem;font-weight:600;cursor:pointer;">📤 发送 / Send</button>
+    <p id="inqStatus" style="text-align:center;margin-top:10px;font-size:0.9rem;color:#1e3a5f;"></p>
+  </div>
+</div>
+
+<script>
+  var slideData = {
+    zh: [
+      { title: '精密工业设备', desc: '数控折弯机 · 激光切割机 · 水切割机<br>高精度加工，全球50+国家信赖', btn: '联系我们 →', link: 'javascript:void(0)' },
+      { title: 'CNC数控成型', desc: '100T/3200 液压折弯机<br>DELEM DA53T · 4+1轴 · ±0.01mm精度', btn: '查看产品 →', link: '2.html' },
+      { title: '激光切割方案', desc: '4000W光纤激光切割机<br>3000×1500mm · 交换工作台 · 自动聚焦', btn: '查看产品 →', link: '2.html' },
+      { title: '全球服务网络', desc: '立足上海，服务全球<br>产品出口欧洲、中东、美洲等50+国家', btn: '了解更多 →', link: '2.html#about' },
+    ],
+    en: [
+      { title: 'Precision Industrial Equipment', desc: 'CNC Press Brake · Laser Cutter · Waterjet<br>High Precision, Trusted in 50+ Countries', btn: 'Contact Us →', link: 'javascript:void(0)' },
+      { title: 'CNC Forming Solutions', desc: '100T/3200 Hydraulic Press Brake<br>DELEM DA53T · 4+1 Axis · ±0.01mm', btn: 'View Products →', link: '2.html' },
+      { title: 'Laser Cutting Solutions', desc: '4000W Fiber Laser Cutter<br>3000×1500mm · Exchange Table · Auto Focus', btn: 'View Products →', link: '2.html' },
+      { title: 'Global Service Network', desc: 'Based in Shanghai, Serving Worldwide<br>Exported to 50+ Countries Across Continents', btn: 'Learn More →', link: '2.html#about' },
+    ]
+  };
+
+  var currentSlide = 0, totalSlides = 4;
+  var slides = document.getElementById('heroSlides');
+  var indicators = document.querySelectorAll('.hero-indicators span');
+  var currentLang = localStorage.getItem('preferredLanguage') || 'zh';
+
+  // 留言弹窗
+  var inquiryOverlay = document.getElementById('inquiryOverlay');
+  window.openInquiry = function() { if (inquiryOverlay) inquiryOverlay.style.display = 'flex'; };
+  document.getElementById('inqCloseBtn').addEventListener('click', function(){ inquiryOverlay.style.display = 'none'; });
+  inquiryOverlay.addEventListener('click', function(e){ if(e.target===inquiryOverlay) inquiryOverlay.style.display = 'none'; });
+  document.getElementById('inqSendBtn').addEventListener('click', function(){
+    var n = document.getElementById('inqName').value.trim();
+    var em = document.getElementById('inqEmail').value.trim();
+    var msg = document.getElementById('inqMessage').value.trim();
+    var st = document.getElementById('inqStatus');
+    if(!n||!em||!msg){ st.textContent = '请填写所有字段 / Please fill all fields'; return; }
+    var x = new XMLHttpRequest();
+    x.open('POST','/save-message');
+    x.setRequestHeader('Content-Type','application/json');
+    x.onload=function(){
+      st.textContent='✅ 发送成功！/ Sent!';
+      document.getElementById('inqName').value='';
+      document.getElementById('inqEmail').value='';
+      document.getElementById('inqMessage').value='';
+      setTimeout(function(){ inquiryOverlay.style.display='none'; st.textContent=''; },1500);
+    };
+    x.send(JSON.stringify({time:new Date().toLocaleString('zh-CN'),content:'Name: '+n+' | Email: '+em+' | Message: '+msg}));
+  });
+// 只有第2张幻灯片（索引1）使用多图网格
+var slideGridImages = {
+  1: ['image/one.png', 'image/three.jpg', 'image/two.png',
+      'image/four.jpg', 'image/five.jpg', 'image/six.jpg']
+};
+function initSlideGrids() {
+  var allSlides = document.querySelectorAll('.hero-slide');
+  allSlides.forEach(function(slide, index) {
+    if (index !== 1) return;
+    var grid = document.createElement('div');
+    grid.className = 'hero-slide-grid';
+    var images = slideGridImages[1];
+    images.forEach(function(img) {
+      var cell = document.createElement('div');
+      cell.className = 'grid-img';
+      cell.style.backgroundImage = 'url(\'' + img + '\')';
+      grid.appendChild(cell);
+    });
+    slide.appendChild(grid);
+  });
+}
+// ========== 第4页：经纬线网格 + 随机金色光点 ==========
+function initMeridianGrid() {
+  var slide4 = document.querySelector('.hero-slide[data-index="3"]');
+  if (!slide4) return;
+  // 经纬线网格
+  var grid = document.createElement('div');
+  grid.className = 'meridian-grid';
+  slide4.appendChild(grid);
+  // 边缘渐暗遮罩
+  var vignette = document.createElement('div');
+  vignette.className = 'meridian-vignette';
+  slide4.appendChild(vignette);
+  // 20个随机金色光点
+  for (var i = 0; i < 20; i++) {
+    var dot = document.createElement('div');
+    dot.className = 'meridian-dot';
+    dot.style.top = (Math.random() * 80 + 10) + '%';
+    dot.style.left = (Math.random() * 80 + 10) + '%';
+    dot.style.setProperty('--d', (Math.random() * 3 + 1).toFixed(1) + 's');
+    slide4.appendChild(dot);
+  }
+}
+  function goToSlide(i) {
+    currentSlide = i;
+    slides.style.transform = 'translateX(-'+(i*100)+'%)';
+    indicators.forEach(function(d,j){ d.classList.toggle('active',j===i); });
+    updateSlideInfo();
+  }
+// ========== 👇 新增：导航栏文字多语言 ==========
+var navTexts = {
+  zh: { products: '产品', tech: '技术', service: '服务', learnMore: '了解更多' },
+  en: { products: 'Products', tech: 'Technology', service: 'Service', learnMore: 'Learn More' }
+};
+function updateNavText() {
+  var t = navTexts[currentLang] || navTexts['en'];
+  document.getElementById('navProducts').textContent = t.products;
+  document.getElementById('navTech').textContent = t.tech;
+  document.getElementById('navService').textContent = t.service;
+  document.getElementById('navLearnMore').textContent = t.learnMore;
+}
+// ========== 👆 新增结束 ==========
+  function updateSlideInfo() {
+    var d = (slideData[currentLang]||slideData['en'])[currentSlide];
+    document.getElementById('slideTitle').textContent = d.title;
+    document.getElementById('slideDesc').innerHTML = d.desc;
+    var btn = document.getElementById('slideBtn');
+    btn.textContent = d.btn;
+    btn.href = d.link;
+    btn.onclick = function(e) {
+      if (d.link === 'javascript:void(0)') {
+        e.preventDefault();
+        openInquiry();
+      }
+    };
+  }
+
+  indicators.forEach(function(dot){
+    dot.addEventListener('click',function(){ goToSlide(parseInt(this.getAttribute('data-index'))); });
+  });
+
+  var touchStartX = 0;
+  slides.addEventListener('touchstart',function(e){ touchStartX = e.touches[0].clientX; });
+  slides.addEventListener('touchend',function(e){
+    var diff = touchStartX - e.changedTouches[0].clientX;
+    if(Math.abs(diff)>50){
+      if(diff>0 && currentSlide<totalSlides-1) goToSlide(currentSlide+1);
+      else if(diff<0 && currentSlide>0) goToSlide(currentSlide-1);
+    }
+  });
+
+  var wheelTimeout;
+  slides.addEventListener('wheel',function(e){
+    clearTimeout(wheelTimeout);
+    wheelTimeout = setTimeout(function(){
+      if(e.deltaX>30||e.deltaY>30){ if(currentSlide<totalSlides-1) goToSlide(currentSlide+1); }
+      else if(e.deltaX<-30||e.deltaY<-30){ if(currentSlide>0) goToSlide(currentSlide-1); }
+    },100);
+  });
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'){ if(currentSlide<totalSlides-1) goToSlide(currentSlide+1); }
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){ if(currentSlide>0) goToSlide(currentSlide-1); }
+  });
+
+  var coverLangSelect = document.getElementById('coverLangSelect');
+  coverLangSelect.value = currentLang;
+    coverLangSelect.addEventListener('change',function(){
+    currentLang = this.value;
+    localStorage.setItem('preferredLanguage',currentLang);
+    updateSlideInfo();
+    updateNavText();
+  });
+updateNavText();
+initSlideGrids();
+initMeridianGrid();
+  goToSlide(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设备展示 · 可展开详情</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f2f4f8;
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .poster-grid {
+      max-width: 1440px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid #e9edf4;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header {
+      padding: 20px 24px 12px 24px;
+      border-bottom: 1px solid #eef2f7;
+      background: #fafbfd;
+      cursor: pointer;
+      transition: background 0.15s;
+      user-select: none;
+      border-radius: 24px 24px 0 0;
+    }
+
+    .card-header:hover {
+      background: #f0f4fe;
+    }
+
+    .card-header h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #0b1a33;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-header .sub {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #4a5b7a;
+      margin-top: 4px;
+      letter-spacing: 0.01em;
+      border-left: 3px solid #2a7de1;
+      padding-left: 12px;
+      background: #f2f6fe;
+      border-radius: 0 8px 8px 0;
+      line-height: 1.4;
+    }
+
+    .card-body {
+      padding: 16px 24px 24px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .img-placeholder {
+      background: #eef2f9;
+      border-radius: 16px;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a4f73;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1px dashed #b8c8e0;
+      transition: background 0.2s;
+      background-image: radial-gradient(circle at 20% 30%, #d9e2f0 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .img-placeholder span {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(4px);
+      padding: 8px 18px;
+      border-radius: 40px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      border: 1px solid rgba(255,255,255,0.9);
+    }
+
+    .spec-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #1e2b41;
+      margin-top: 6px;
+    }
+
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #e4eaf2;
+      padding: 6px 0;
+    }
+
+    .spec-row:last-child {
+      border-bottom: none;
+    }
+
+    .spec-label {
+      font-weight: 500;
+      color: #3f5a7a;
+      letter-spacing: 0.01em;
+    }
+
+    .spec-value {
+      font-weight: 500;
+      color: #0b1a33;
+      text-align: right;
+      max-width: 60%;
+    }
+
+    .spec-value small {
+      font-weight: 400;
+      color: #5d6f8c;
+      font-size: 0.75rem;
+      margin-left: 4px;
+    }
+
+    .badge-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      border-top: 1px solid #eef2f7;
+      padding-top: 14px;
+    }
+
+    .badge {
+      background: #eef4fc;
+      color: #1d4a8a;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 30px;
+      letter-spacing: 0.02em;
+      border: 1px solid #d6e2f5;
+    }
+
+    .badge.orange {
+      background: #fef2e6;
+      color: #b45f2a;
+      border-color: #f7dcc8;
+    }
+
+    .badge.green {
+      background: #e4f4ea;
+      color: #1f6e4a;
+      border-color: #c6e3d4;
+    }
+
+    .badge.purple {
+      background: #edeafc;
+      color: #4a3b8a;
+      border-color: #d6cef5;
+    }
+
+    /* 展开详情区域 */
+    .detail-wrapper {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s ease, padding 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+      background: #f9fbfe;
+      border-radius: 0 0 20px 20px;
+      padding: 0 24px;
+      margin: 0 0 0 0;
+    }
+
+    .detail-wrapper.open {
+      max-height: 1600px; /* 足够容纳全部描述 */
+      opacity: 1;
+      padding: 18px 24px 24px 24px;
+      border-top: 1px solid #e0e7f2;
+    }
+
+    .detail-content {
+      font-size: 0.9rem;
+      line-height: 1.9;
+      color: #2a3a56;
+      word-break: break-word;
+    }
+
+    .detail-content p {
+      margin-bottom: 14px;
+      padding: 14px 18px;
+      background: #ffffff;
+      border-radius: 10px;
+      border: 1px solid #e8edf5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .detail-content p strong {
+      display: block;
+      font-size: 0.95rem;
+      color: #0f2440;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e0e7f2;
+      letter-spacing: 0.02em;
+    }
+
+    .detail-content ul {
+      padding-left: 20px;
+      margin: 8px 0 14px 0;
+      list-style: none;
+    }
+
+    .detail-content li {
+      margin-bottom: 6px;
+      padding: 6px 12px;
+      background: #f7f9fc;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .detail-content li::before {
+      content: '•';
+      position: absolute;
+      left: 10px;
+      color: #2a7de1;
+      font-weight: bold;
+    }
+
+    .expand-toggle {
+      background: transparent;
+      border: none;
+      color: #2a6bb0;
+      font-weight: 600;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 8px 12px 4px 0;
+      margin-top: 6px;
+      transition: color 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .expand-toggle:hover {
+      color: #0f3d77;
+    }
+
+    .expand-toggle .arrow {
+      display: inline-block;
+      transition: transform 0.25s ease;
+      font-size: 0.9rem;
+    }
+
+    .expand-toggle .arrow.open {
+      transform: rotate(180deg);
+    }
+
+    /* 卡片颜色主题 */
+    .card.blue-edge .card-header { border-top: 4px solid #2a7de1; }
+    .card.green-edge .card-header { border-top: 4px solid #2b8c5e; }
+    .card.orange-edge .card-header { border-top: 4px solid #d97c2b; }
+    .card.purple-edge .card-header { border-top: 4px solid #7a5fd0; }
+    .card.grey-edge .card-header { border-top: 4px solid #6f7d98; }
+
+    @media (max-width: 480px) {
+      .poster-grid {
+        grid-template-columns: 1fr;
+      }
+      .card-header h2 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div style="text-align:center;padding:10px 0 20px;">
+  <a href="2.html" style="color:#1e3a5f;text-decoration:none;font-size:1rem;">← 返回首页</a>
+</div>
+<div style="text-align:center;margin-bottom:10px;">
+  <select id="productLangSelect" style="padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:4px;font-size:0.85rem;cursor:pointer;font-family:inherit;background:white;">
+    <option value="zh">🇨🇳 中文</option>
+    <option value="en">🇬🇧 English</option>
+  </select>
+</div>
+<script>
+
+        // ========== 语言切换 ==========
+        var pls = document.getElementById('productLangSelect');
+        var saved = localStorage.getItem('preferredLanguage') || 'zh';
+        pls.value = saved;
+
+        var productLang = {
+        zh: {
+        back: '← 返回首页',
+        langLabel: '语言',
+        expandBtn: '📄 展开详情',
+        collapseBtn: '📄 收起详情',
+        card1Title: '✧ CNC水切割机',
+        card1Sub: '飞臂式 · 2000×3000 mm · 413MPa',
+        card1Placeholder: '📸 插入图片: 水切割整机 / 飞臂结构',
+        card1Series: '型号系列',
+        card1Travel: '切割行程 (X×Y)',
+        card1Z: 'Z轴行程',
+        card1Precision: '切割精度',
+        card1Repeat: '重复定位',
+        card1Pump: '高压系统',
+        card1CNC: 'CNC 控制器',
+        card2Title: '⚙ PE液压热熔对接焊机',
+        card2Sub: '75‑250 mm · 液压半自动',
+        card2Placeholder: '📸 插入图片: 焊机主机 / 夹具',
+        card2Model: '型号',
+        card2Control: '控制方式',
+        card2Delivery: '交货期',
+        card3Title: '▣ CNC液压折弯机',
+        card3Sub: 'DELEM DA53T · 100T / 3200mm · 4+1轴',
+        card3Placeholder: '📸 插入图片: 折弯机整机 / 控制器',
+        card3Force: '公称力',
+        card3Table: '工作台长度',
+        card3YRepeat: 'Y轴重复精度',
+        card3BackGauge: '后挡料 X/R',
+        card3ControlSys: '控制系统',
+        card4Title: '▣ CNC平面磨床 5425',
+        card4Sub: '3轴联动 · 540×250 mm',
+        card4Placeholder: '📸 插入图片: 磨床5425 / 半罩',
+        card4TableSize: '工作台尺寸',
+        card4Spindle: '主轴中心距台面',
+        card4Wheel: '砂轮规格',
+        card4Motor: '主轴电机',
+        card4Roughness: '表面粗糙度',
+        card5Title: '▣ CNC平面磨床 4080',
+        card5Sub: '800×400 mm · 全罩/半罩',
+        card5Placeholder: '📸 插入图片: 磨床4080 / 全罩',
+        card5Travel: '最大行程',
+        card5Weight: '净重',
+        card6Title: '✧ CNC剪板机',
+        card6Sub: '6×3200 mm · CybTouch 8G (瑞士)',
+        card6Placeholder: '📸 插入图片: 剪板机整机 / 控制器',
+        card6Thickness: '最大剪切厚度',
+        card6Length: '剪切长度',
+        card6BackGauge: '后挡料行程',
+        card6Motor: '电机功率',
+        card6Controller: '控制器 (选配)',
+        card7Title: '⚡ 光纤激光切割机',
+        card7Sub: '3000×1500 mm · 4000W · 交换工作台',
+        card7Placeholder: '📸 插入图片: 激光机带罩 / 交换台',
+        card7Range: '切割范围',
+        card7Power: '激光功率',
+        card7Accel: '最大加速度',
+        card7Precision: '定位精度',
+        card7Thickness: '切割厚度',
+        card8Title: '⚙ CNC车床 CK6130-700L',
+        card8Sub: 'GSK980TDI · 电动刀架',
+        card8Placeholder: '📸 插入图片: 车床整机 / 刀架',
+        card8Control: '控制系统',
+        card8Tool: '刀架',
+        card8Chuck: '卡盘',
+        card8Guide: '导轨',
+        card9Title: '▣ NC扭轴折弯机',
+        card9Sub: '扭轴同步 · 100T/3200 · Estun E300P',
+        card9Placeholder: '📸 插入图片: 扭轴折弯机 / 后挡料',
+        card9Force: '公称力',
+        card9Table: '工作台长度',
+        card9Stroke: '滑块行程',
+        card9BackGauge: '后挡料行程',
+        card9Controller: '控制器',
+        card10Title: '📟 MAPER HT071',
+        card10Sub: '剪板机专用 CNC · 52年自动化经验',
+        card10Placeholder: '📸 插入图片: HT071 控制器面板',
+        card10Power: '电源',
+        card10Freq: '计数频率',
+        card10Storage: '程序存储',
+        card10IP: '防护等级',
+        card11Title: '📊 激光 3000W / 4000W',
+        card11Sub: '切割厚度对照 · 技术参数',
+        card11Placeholder: '📸 插入图片: 厚度对比图 / 样件',
+        card12Title: '💧 水切割 2060 / 2080',
+        card12Sub: '大型工作台 · 2000×6000 / 8000 mm',
+        card12Placeholder: '📸 插入图片: 大型水切割工作台',
+        specLabels: [
+          '型号系列', '切割行程 (X×Y)', 'Z轴行程', '切割精度', '重复定位', '高压系统', 'CNC 控制器',
+          '型号', '控制方式', '交货期',
+          '公称力', '工作台长度', 'Y轴重复精度', '后挡料 X/R', '控制系统',
+          '工作台尺寸', '主轴中心距台面', '砂轮规格', '主轴电机', '表面粗糙度',
+          '工作台尺寸', '最大行程', '砂轮规格', '主轴电机', '净重',
+          '最大剪切厚度', '剪切长度', '后挡料行程', '电机功率', '控制器 (选配)',
+          '切割范围', '激光功率', '最大加速度', '定位精度', '切割厚度',
+          '控制系统', '刀架', '卡盘', '导轨',
+          '公称力', '工作台长度', '滑块行程', '后挡料行程', '控制器',
+          '电源', '计数频率', '程序存储', '防护等级',
+          '3000W 碳钢', '4000W 碳钢', '不锈钢 3000W', '不锈钢 4000W',
+          '型号 2060', '型号 2080', '高压泵', '蓄能器',
+        ],
+    },
+        en: {
+        back: '← Back to Home',
+        langLabel: 'Language',
+        expandBtn: '📄 Expand Details',
+        collapseBtn: '📄 Collapse',
+        card1Title: '✧ CNC Waterjet Cutting',
+        card1Sub: 'Flying‑Arm · 2000×3000 mm · 413MPa',
+        card1Placeholder: '📸 Insert image: Waterjet machine / Flying arm',
+        card1Series: 'Model Series',
+        card1Travel: 'Cutting Travel (X×Y)',
+        card1Z: 'Z Axis Travel',
+        card1Precision: 'Cutting Precision',
+        card1Repeat: 'Repeatability',
+        card1Pump: 'High Pressure System',
+        card1CNC: 'CNC Controller',
+        card2Title: '⚙ PE Butt Fusion Welder',
+        card2Sub: '75‑250 mm · Hydraulic Semi-Auto',
+        card2Placeholder: '📸 Insert image: Welder / Clamp',
+        card2Model: 'Model',
+        card2Control: 'Control Mode',
+        card2Delivery: 'Delivery Time',
+        card3Title: '▣ CNC Press Brake',
+        card3Sub: 'DELEM DA53T · 100T / 3200mm · 4+1 Axis',
+        card3Placeholder: '📸 Insert image: Press brake / Controller',
+        card3Force: 'Nominal Force',
+        card3Table: 'Table Length',
+        card3YRepeat: 'Y Axis Repeatability',
+        card3BackGauge: 'Back Gauge X/R',
+        card3ControlSys: 'Control System',
+        card4Title: '▣ CNC Surface Grinder 5425',
+        card4Sub: '3-Axis · 540×250 mm',
+        card4Placeholder: '📸 Insert image: Grinder 5425',
+        card4TableSize: 'Table Size',
+        card4Spindle: 'Spindle Center to Table',
+        card4Wheel: 'Wheel Specs',
+        card4Motor: 'Spindle Motor',
+        card4Roughness: 'Surface Roughness',
+        card5Title: '▣ CNC Surface Grinder 4080',
+        card5Sub: '800×400 mm · Full/Semi Cover',
+        card5Placeholder: '📸 Insert image: Grinder 4080',
+        card5Travel: 'Max Travel',
+        card5Weight: 'Net Weight',
+        card6Title: '✧ CNC Guillotine Shear',
+        card6Sub: '6×3200 mm · CybTouch 8G (Swiss)',
+        card6Placeholder: '📸 Insert image: Shear / Controller',
+        card6Thickness: 'Max Cutting Thickness',
+        card6Length: 'Cutting Length',
+        card6BackGauge: 'Back Gauge Travel',
+        card6Motor: 'Motor Power',
+        card6Controller: 'Controller (Option)',
+        card7Title: '⚡ Fiber Laser Cutter',
+        card7Sub: '3000×1500 mm · 4000W · Exchange Table',
+        card7Placeholder: '📸 Insert image: Laser / Exchange table',
+        card7Range: 'Cutting Range',
+        card7Power: 'Laser Power',
+        card7Accel: 'Max Acceleration',
+        card7Precision: 'Positioning Accuracy',
+        card7Thickness: 'Cutting Thickness',
+        card8Title: '⚙ CNC Lathe CK6130-700L',
+        card8Sub: 'GSK980TDI · Electric Toolpost',
+        card8Placeholder: '📸 Insert image: Lathe / Toolpost',
+        card8Control: 'Control System',
+        card8Tool: 'Toolpost',
+        card8Chuck: 'Chuck',
+        card8Guide: 'Guide Rail',
+        card9Title: '▣ NC Press Brake',
+        card9Sub: 'Torsion Bar · 100T/3200 · Estun E300P',
+        card9Placeholder: '📸 Insert image: NC Press Brake',
+        card9Force: 'Nominal Force',
+        card9Table: 'Table Length',
+        card9Stroke: 'Ram Stroke',
+        card9BackGauge: 'Back Gauge Travel',
+        card9Controller: 'Controller',
+        card10Title: '📟 MAPER HT071',
+        card10Sub: 'Shear CNC · 52 Years Experience',
+        card10Placeholder: '📸 Insert image: HT071 Panel',
+        card10Power: 'Power Supply',
+        card10Freq: 'Count Frequency',
+        card10Storage: 'Program Storage',
+        card10IP: 'Protection Grade',
+        card11Title: '📊 Laser 3000W / 4000W',
+        card11Sub: 'Cutting Thickness Chart · Tech Data',
+        card11Placeholder: '📸 Insert image: Thickness chart',
+        card12Title: '💧 Waterjet 2060 / 2080',
+        card12Sub: 'Large Table · 2000×6000 / 8000 mm',
+        card12Placeholder: '📸 Insert image: Large waterjet table',
+        specLabels: [
+          'Model Series', 'Cutting Travel (X×Y)', 'Z Axis Travel', 'Cutting Precision', 'Repeatability', 'High Pressure System', 'CNC Controller',
+          'Model', 'Control Mode', 'Delivery Time',
+          'Nominal Force', 'Table Length', 'Y Axis Repeatability', 'Back Gauge X/R', 'Control System',
+          'Table Size', 'Spindle Center to Table', 'Wheel Specs', 'Spindle Motor', 'Surface Roughness',
+          'Table Size', 'Max Travel', 'Wheel Specs', 'Spindle Motor', 'Net Weight',
+          'Max Cutting Thickness', 'Cutting Length', 'Back Gauge Travel', 'Motor Power', 'Controller (Option)',
+          'Cutting Range', 'Laser Power', 'Max Acceleration', 'Positioning Accuracy', 'Cutting Thickness',
+          'Control System', 'Toolpost', 'Chuck', 'Guide Rail',
+          'Nominal Force', 'Table Length', 'Ram Stroke', 'Back Gauge Travel', 'Controller',
+          'Power Supply', 'Count Frequency', 'Program Storage', 'Protection Grade',
+          '3000W Carbon Steel', '4000W Carbon Steel', 'Stainless 3000W', 'Stainless 4000W',
+          'Model 2060', 'Model 2080', 'High Pressure Pump', 'Accumulator',
+        ],
+    }
+    };
+
+        function updateProductLang(lang) {
+        var t = productLang[lang] || productLang['en'];
+        // 返回链接
+        var backLink = document.querySelector('a[href="2.html"]');
+        if (backLink) backLink.textContent = t.back;
+
+        // 所有卡片标题和副标题
+    var cards = document.querySelectorAll('.card');
+        var cardKeys = [
+          {titleKey: 'card1Title', subKey: 'card1Sub'},
+          {titleKey: 'card2Title', subKey: 'card2Sub'},
+          {titleKey: 'card3Title', subKey: 'card3Sub'},
+          {titleKey: 'card4Title', subKey: 'card4Sub'},
+          {titleKey: 'card5Title', subKey: 'card5Sub'},
+          {titleKey: 'card6Title', subKey: 'card6Sub'},
+          {titleKey: 'card7Title', subKey: 'card7Sub'},
+          {titleKey: 'card8Title', subKey: 'card8Sub'},
+          {titleKey: 'card9Title', subKey: 'card9Sub'},
+          {titleKey: 'card10Title', subKey: 'card10Sub'},
+          {titleKey: 'card11Title', subKey: 'card11Sub'},
+          {titleKey: 'card12Title', subKey: 'card12Sub'},
+        ];
+
+        var cardElements = document.querySelectorAll('.card');
+        cardElements.forEach(function(card, i) {
+          if (i < cardKeys.length) {
+            var h2 = card.querySelector('h2');
+            var sub = card.querySelector('.sub');
+            if (h2) h2.textContent = t[cardKeys[i].titleKey];
+            if (sub) sub.textContent = t[cardKeys[i].subKey];
+          }
+        });
+
+        // 展开按钮
+        var btns = document.querySelectorAll('.expand-toggle');
+            // 更新规格标签
+    var specLabels = document.querySelectorAll('.spec-label');
+    if (specLabels.length > 0 && t.specLabels) {
+      for (var i = 0; i < specLabels.length && i < t.specLabels.length; i++) {
+        specLabels[i].textContent = t.specLabels[i];
+      }
+    }
+        btns.forEach(function(btn) {
+        var arrow = btn.querySelector('.arrow');
+        if (arrow && arrow.classList.contains('open')) {
+        btn.childNodes[0].textContent = t.collapseBtn + ' ';
+    } else if (!arrow || !arrow.classList.contains('open')) {
+        btn.childNodes[0].textContent = t.expandBtn + ' ';
+    }
+    });
+        // 更新规格值中的中文
+    var specValuesZh = [
+      '2020 / 2030 / 2040 / 2060 / 2080', '2000×3000 mm（可定制）', '150 / 210 / 310 mm', '±0.1 mm', '±0.025 mm', '413 MPa · 3.8 L/min', 'ESA / FAGOR (意大利)',
+      '75‑250mm (90‑250加75mm夹具)', '液压半自动', '8 工作日',
+      '1000 kN', '3200 mm', '±0.01 mm', '500 / 200 mm', 'DELEM DA53T (荷兰)',
+      '540×250 mm', '450 mm', 'Φ200×20×Φ31.75', '2.2 kW', 'Ra 0.32 μm',
+      '800×400 mm', '900×480 mm', 'Φ350×40×Φ127', '5 kW', '3500 kg',
+      '6 mm (450N/mm²)', '3200 mm', '20‑600 mm', '7.5 kW', 'Cybelec CybTouch 8G',
+      '3000×1500 mm', '4000W (RK光纤)', '0.6G', '±0.01 mm', '0.1‑20 mm (依材质)',
+      'GSK980TDI', '电动 4工位', '手动三爪', '双山导轨',
+      '1000 kN', '3200 mm', '150 mm', '500 mm', 'Estun E300P',
+      '24Vdc · 7.2W', '40KHz (4倍频 160KHz)', '99个程序 × 20循环', 'IP65 (聚碳酸酯)',
+      '≤20 mm', '≤25 mm', '≤12 mm', '≤16 mm',
+      '2000×6000 mm', '2000×8000 mm', 'FLOW 双向增压', 'HSEC (德国)'
+    ];
+    var specValuesEn = [
+      '2020 / 2030 / 2040 / 2060 / 2080', '2000×3000 mm (customizable)', '150 / 210 / 310 mm', '±0.1 mm', '±0.025 mm', '413 MPa · 3.8 L/min', 'ESA / FAGOR (Italy)',
+      '75‑250mm (90‑250 + 75mm clamp)', 'Hydraulic Semi-Auto', '8 working days',
+      '1000 kN', '3200 mm', '±0.01 mm', '500 / 200 mm', 'DELEM DA53T (Netherlands)',
+      '540×250 mm', '450 mm', 'Φ200×20×Φ31.75', '2.2 kW', 'Ra 0.32 μm',
+      '800×400 mm', '900×480 mm', 'Φ350×40×Φ127', '5 kW', '3500 kg',
+      '6 mm (450N/mm²)', '3200 mm', '20‑600 mm', '7.5 kW', 'Cybelec CybTouch 8G',
+      '3000×1500 mm', '4000W (RK Fiber)', '0.6G', '±0.01 mm', '0.1‑20 mm (material dependent)',
+      'GSK980TDI', 'Electric 4-station', 'Manual 3-jaw', 'Double Mountain Guide',
+      '1000 kN', '3200 mm', '150 mm', '500 mm', 'Estun E300P',
+      '24Vdc · 7.2W', '40KHz (4x 160KHz)', '99 programs × 20 cycles', 'IP65 (Polycarbonate)',
+      '≤20 mm', '≤25 mm', '≤12 mm', '≤16 mm',
+      '2000×6000 mm', '2000×8000 mm', 'FLOW Bidirectional', 'HSEC (Germany)'
+    ];
+    var specValues = document.querySelectorAll('.spec-value');
+    var langValues = (lang === 'zh' || !specValuesEn) ? specValuesZh : specValuesEn;
+    specValues.forEach(function(el, i) {
+      if (langValues[i]) {
+        // 保留 <small> 标签
+        var small = el.querySelector('small');
+        if (small) {
+          el.innerHTML = langValues[i] + ' <small>' + small.textContent + '</small>';
+        } else {
+          el.textContent = langValues[i];
+        }
+      }
+    });
+        // 更新小标签
+    var badgeZh = [
+      '磨料切割', 'C50V EHV', 'Rexroth 泵', 'NEW‑CAM',
+      'PE 管材', '快速交货',
+      'Estun 伺服', 'HEIDENHAIN', '激光安全(选)',
+      'TBI 丝杠', 'NSK 轴承', 'Siemens 电气',
+      'GS986 系统', '强力电磁吸盘', '全封闭防护',
+      'E21S 可选', 'EMB 管接头', 'Sunny 泵',
+      '自动聚焦', 'Delta 伺服', 'Schneider 电气', '蛙跳/断点续切',
+      '排刀架可选', 'GSK 系统',
+      'Rexroth 阀', 'Sunny 泵', 'NOK 密封',
+      '偏移功能', '不锈钢外壳', '毫米/英寸切换',
+      '氮气/氧气/空气', '自动寻边', '专家数据库',
+      '金属对金属密封', '自动卸压', '自诊断'
+    ];
+    var badgeEn = [
+      'Abrasive Cutting', 'C50V EHV', 'Rexroth Pump', 'NEW‑CAM',
+      'PE Pipe', 'Fast Delivery',
+      'Estun Servo', 'HEIDENHAIN', 'Laser Safety (Opt)',
+      'TBI Screw', 'NSK Bearing', 'Siemens Electrics',
+      'GS986 System', 'Mag Chuck', 'Full Cover',
+      'E21S Option', 'EMB Connector', 'Sunny Pump',
+      'Auto Focus', 'Delta Servo', 'Schneider', 'Frog Jump/Resume',
+      'Gang Toolpost', 'GSK System',
+      'Rexroth Valve', 'Sunny Pump', 'NOK Seal',
+      'Offset Function', 'SS Housing', 'mm/inch Switch',
+      'N₂/O₂/Air', 'Auto Edge Find', 'Expert Database',
+      'Metal-Metal Seal', 'Auto Relief', 'Self-Diagnosis'
+    ];
+    var badges = document.querySelectorAll('.badge');
+    var langBadges = (lang === 'zh') ? badgeZh : badgeEn;
+    badges.forEach(function(el, i) {
+      if (langBadges[i]) el.textContent = langBadges[i];
+    });
+    }
+
+        pls.addEventListener('change', function() {
+        localStorage.setItem('preferredLanguage', this.value);
+        updateProductLang(this.value);
+    });
+
+        // 初始化
+        updateProductLang(saved);
+
+        // ========== 展开/收起功能 ==========
+        (function() {
+        const toggles = document.querySelectorAll('.expand-toggle');
+        const headers = document.querySelectorAll('.card-header');
+
+        function toggleDetail(btn) {
+        var t = productLang[pls.value] || productLang['en'];
+        const targetId = btn.getAttribute('data-target');
+        const detail = document.getElementById(targetId);
+        if (!detail) return;
+        const isOpen = detail.classList.contains('open');
+        document.querySelectorAll('.detail-wrapper.open').forEach(el => {
+        if (el.id !== targetId) {
+        el.classList.remove('open');
+        const arrow = document.querySelector(`.expand-toggle[data-target="${el.id}"] .arrow`);
+        if (arrow) arrow.classList.remove('open');
+    }
+    });
+        if (!isOpen) {
+        detail.classList.add('open');
+        const arrow = btn.querySelector('.arrow');
+        if (arrow) arrow.classList.add('open');
+        btn.childNodes[0].textContent = t.collapseBtn + ' ';
+    } else {
+        detail.classList.remove('open');
+        const arrow = btn.querySelector('.arrow');
+        if (arrow) arrow.classList.remove('open');
+        btn.childNodes[0].textContent = t.expandBtn + ' ';
+    }
+    }
+
+        toggles.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleDetail(this);
+    });
+    });
+
+        headers.forEach(header => {
+        header.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        if (!targetId) return;
+        const btn = document.querySelector(`.expand-toggle[data-target="${targetId}"]`);
+        if (btn) toggleDetail(btn);
+    });
+    });
+    })();
+
+</script>
+<div class="poster-grid" id="app">
+
+       <!-- 1. 数控液压折弯机 100T/3200 4+1轴 -->
+    <div class="card purple-edge">
+        <div class="card-header" data-target="detail3">
+            <h2>▣ CNC Press Brake</h2>
+            <div class="sub">DELEM DA53T · 100T / 3200mm · 4+1轴</div>
+        </div>
+        <div class="card-body">
+          <img src="image/press-brake1.png" alt="折弯机" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">
+            <div class="spec-list">
+                <div class="spec-row"><span class="spec-label">公称力</span><span class="spec-value">1000 kN</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">工作台长度</span><span class="spec-value">3200 mm</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">Y轴重复精度</span><span
+                        class="spec-value">±0.01 mm</span></div>
+                <div class="spec-row"><span class="spec-label">后挡料 X/R</span><span
+                        class="spec-value">500 / 200 mm</span></div>
+                <div class="spec-row"><span class="spec-label">控制系统</span><span
+                        class="spec-value">DELEM DA53T (荷兰)</span></div>
+            </div>
+            <div class="badge-group">
+                <span class="badge">Estun 伺服</span><span class="badge orange">HEIDENHAIN</span>
+                <span class="badge green">激光安全(选)</span>
+            </div>
+            <button class="expand-toggle" data-target="detail3">📄 展开详情 <span class="arrow">▾</span></button>
+            <div id="detail3" class="detail-wrapper">
+                <div class="detail-content">
+                    <p><strong>Main features:</strong> Closed loop with electro-hydraulic servo valve (Germany) &
+                        HEIDENHAIN grating ruler; back gauge with multiple shafts; overall welded body stress-relieved
+                        by vibration aging; ANSYS analysis; integrated hydraulic system (Germany); DELEM DA53T
+                        controller; C-shaped plates for grating ruler; oil cylinder with Japanese seals; EMB pipe
+                        connections.</p>
+                    <p><strong>Standard 4+1 axis</strong> (Y1,Y2,X,R+V). Options: laser safety, electrical Z1/Z2 with
+                        pedal, front support.</p>
+                    <p><strong>Main parts:</strong> Estun servo, Schneider electrics, Rexroth valve, Sunny pump, DA53T,
+                        EMB connectors, Fargo grating ruler.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 2. CNC水切割机 (Alana Group) -->
+    <div class="card blue-edge">
+        <div class="card-header" data-target="detail1">
+            <h2>✧ CNC Waterjet Cutting</h2>
+            <div class="sub">Flying‑Arm · 2000×3000 mm · 413MPa</div>
+        </div>
+        <div class="card-body">
+            <img src="image/water%20cutting1.png" alt="水切割机" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">
+            <div class="spec-list">
+                <div class="spec-row"><span class="spec-label">型号系列</span><span class="spec-value">2020 / 2030 / 2040 / 2060 / 2080</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">切割行程 (X×Y)</span><span class="spec-value">2000×3000 mm <small>（可定制）</small></span>
+                </div>
+                <div class="spec-row"><span class="spec-label">Z轴行程</span><span
+                        class="spec-value">150 / 210 / 310 mm</span></div>
+                <div class="spec-row"><span class="spec-label">切割精度</span><span class="spec-value">±0.1 mm</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">重复定位</span><span class="spec-value">±0.025 mm</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">高压系统</span><span class="spec-value">413 MPa · 3.8 L/min</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">CNC 控制器</span><span class="spec-value">ESA / FAGOR (意大利)</span>
+                </div>
+            </div>
+            <div class="badge-group">
+                <span class="badge">磨料切割</span><span class="badge orange">C50V EHV</span>
+                <span class="badge green">Rexroth 泵</span><span class="badge purple">NEW‑CAM</span>
+            </div>
+            <button class="expand-toggle" data-target="detail1">📄 展开详情 <span class="arrow">▾</span></button>
+            <div id="detail1" class="detail-wrapper">
+                <div class="detail-content">
+                    <p><strong>Flying-Arm CNC Cutting Table:</strong><br>
+                        1/ Fly arm, three sides open for easy load/unload<br>
+                        2/ CNC body aparted from table<br>
+                        3/ Cast iron body, stable and holding mechanical precision</p>
+                    <p><strong>Abrasive cutting system:</strong> cutting head, high pressure water switch (pneumatic,
+                        CNC controlled), abrasive control valve (auto suck sand, manual adjust, CNC assistant).</p>
+                    <p><strong>High pressure system C50V EHV:</strong> FLOW bi-directional single-cylinder reciprocating
+                        supercharger, HSEC accumulator (Germany), metal-to-metal sealing, Rexroth pump, Siemens PLC,
+                        main motor SIEMENS, electronic commutation, 10Micron water filter, manual voltage regulation,
+                        overpressure/under voltage protection, self-diagnosis. 413MPa, 380MPa continuous, 3.8L/min,
+                        accumulator 1L, 37KW/50HP.</p>
+                    <p><strong>Options:</strong> Auto-Garnet, Oil Chiller, customized voltage/table size.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. PE液压热熔对接焊机 -->
+    <div class="card green-edge">
+        <div class="card-header" data-target="detail2">
+            <h2>⚙ PE Butt Fusion Welder</h2>
+            <div class="sub">75‑250 mm · 液压半自动</div>
+        </div>
+        <div class="card-body">
+            <img src="image/pe-welder1.png" alt="pe焊机" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">
+            <div class="spec-list">
+                <div class="spec-row"><span class="spec-label">型号</span><span class="spec-value">75‑250mm (90‑250加75mm夹具)</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">控制方式</span><span class="spec-value">液压半自动</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">交货期</span><span class="spec-value">8 工作日</span>
+                </div>
+            </div>
+            <div class="badge-group"><span class="badge">PE 管材</span><span class="badge orange">快速交货</span></div>
+            <button class="expand-toggle" data-target="detail2">📄 展开详情 <span class="arrow">▾</span></button>
+            <div id="detail2" class="detail-wrapper">
+                <div class="detail-content">
+                    <p>90-250mm PE Hydraulic Butt Fusion Welding machine, 75-250mm version adds 75mm tiles on the
+                        90-250mm machine with same parameters.</p>
+                    <p>Hydraulic semi-auto, container package, sea transport.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 4. 数控平面磨床 3轴 5425 (CNC) -->
+    <div class="card grey-edge">
+        <div class="card-header" data-target="detail4">
+            <h2>▣ CNC Surface Grinder 5425</h2>
+            <div class="sub">3轴联动 · 540×250 mm</div>
+        </div>
+        <div class="card-body">
+<img src="image/grinder2.png" alt="磨床" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">
+            <div class="spec-list">
+                <div class="spec-row"><span class="spec-label">工作台尺寸</span><span
+                        class="spec-value">540×250 mm</span></div>
+                <div class="spec-row"><span class="spec-label">主轴中心距台面</span><span
+                        class="spec-value">450 mm</span></div>
+                <div class="spec-row"><span class="spec-label">砂轮规格</span><span
+                        class="spec-value">Φ200×20×Φ31.75</span></div>
+                <div class="spec-row"><span class="spec-label">主轴电机</span><span class="spec-value">2.2 kW</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">表面粗糙度</span><span
+                        class="spec-value">Ra 0.32 μm</span></div>
+            </div>
+            <div class="badge-group">
+                <span class="badge">TBI 丝杠</span><span class="badge orange">NSK 轴承</span>
+                <span class="badge green">Siemens 电气</span>
+            </div>
+            <button class="expand-toggle" data-target="detail4">📄 展开详情 <span class="arrow">▾</span></button>
+            <div id="detail4" class="detail-wrapper">
+                <div class="detail-content">
+                    <p><strong>Structure:</strong> cross saddle, one V one flat guide rail, manual precision scraping,
+                        servo + ball screw drive, automatic fast forward/backward.</p>
+                    <p><strong>Spindle:</strong> NSK angular contact bearings, permanent grease lubrication, thermal
+                        deformation minimized.</p>
+                    <p><strong>CNC system:</strong> new generation 3-axis, free programming, automatic wheel
+                        compensation, three-axis linkage, pulse handwheel (0.001/0.01/0.1mm).</p>
+                    <p><strong>Accessories:</strong> TBI screw, electronic oil pump, permanent magnet chuck 500×200mm,
+                        fully enclosed cover.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. 数控平面磨床 4080 (CNC) -->
+    <div class="card blue-edge">
+        <div class="card-header" data-target="detail5">
+            <h2>▣ CNC Surface Grinder 4080</h2>
+            <div class="sub">800×400 mm · 全罩/半罩</div>
+        </div>
+        <div class="card-body">
+          <img src="image/grinder1.png" alt="磨床2" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">
+            <div class="spec-list">
+                <div class="spec-row"><span class="spec-label">工作台尺寸</span><span
+                        class="spec-value">800×400 mm</span></div>
+                <div class="spec-row"><span class="spec-label">最大行程</span><span class="spec-value">900×480 mm</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">砂轮规格</span><span
+                        class="spec-value">Φ350×40×Φ127</span></div>
+                <div class="spec-row"><span class="spec-label">主轴电机</span><span class="spec-value">5 kW</span></div>
+                <div class="spec-row"><span class="spec-label">净重</span><span class="spec-value">3500 kg</span></div>
+            </div>
+            <div class="badge-group">
+                <span class="badge">GS986 系统</span><span class="badge orange">强力电磁吸盘</span>
+                <span class="badge green">全封闭防护</span>
+            </div>
+            <button class="expand-toggle" data-target="detail5">📄 展开详情 <span class="arrow">▾</span></button>
+            <div id="detail5" class="detail-wrapper">
+                <div class="detail-content">
+                    <p>Cross saddle structure, one V one flat guide rail, manual precision scraping. Servo + ball screw
+                        drive for X/Y/Z, automatic fast forward/backward, precise positioning.</p>
+                    <p>GS986 CNC system, free programming, pulse handwheel. Semi-enclosed cover (full cover option).
+                        Automatic intermittent lubrication, NSK spindle bearings, three-axis TSW dust protection
+                        sleeve.</p>
+                    <p><strong>Standard accessories:</strong> work lights, strong electromagnetic suction cup 800×400,
+                        tool box, diamond pen, etc.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. CNC 剪板机 6×3200 Cybelec 8G -->
+    <div class="card orange-edge">
+        <div class="card-header" data-target="detail6">
+            <h2>✧ CNC Guillotine Shear</h2>
+            <div class="sub">6×3200 mm · CybTouch 8G (瑞士)</div>
+        </div>
+        <div class="card-body">
+ <img src="image/shear1.png" alt="剪板机" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">
+            <div class="spec-list">
+                <div class="spec-row"><span class="spec-label">最大剪切厚度</span><span class="spec-value">6 mm (450N/mm²)</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">剪切长度</span><span class="spec-value">3200 mm</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">后挡料行程</span><span
+                        class="spec-value">20‑600 mm</span></div>
+                <div class="spec-row"><span class="spec-label">电机功率</span><span class="spec-value">7.5 kW</span>
+                </div>
+                <div class="spec-row"><span class="spec-label">控制器 (选配)</span><span class="spec-value">Cybelec CybTouch 8G</span></div>
+      </div>
+      <div class="badge-group">
+        <span class="badge">E21S 可选</span><span class="badge orange">EMB 管接头</span>
+        <span class="badge green">Sunny 泵</span>
+      </div>
+      <button class="expand-toggle" data-target="detail6">📄 展开详情 <span class="arrow">▾</span></button>
+      <div id="detail6" class="detail-wrapper">
+        <div class="detail-content">
+          <p><strong>Cybelec CybTouch 8G features:</strong> intuitive HMI, touchscreen, automatic blade gap, automatic cutting angle/length, back gauge correction, anti-twist, sheet support, parking position, pressure management, wireless connection, over 10 languages.</p>
+          <p><strong>Standard main parts:</strong> Estun servo & drive, Schneider electrics, BOSCH hydraulic valve, Sunny pump, EMB pipe connector, blades (China).</p>
+          <p>Option: E21S controller.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 光纤激光切割机 3000×1500 4000W -->
+  <div class="card purple-edge">
+    <div class="card-header" data-target="detail7">
+      <h2>⚡ Fiber Laser Cutter</h2>
+      <div class="sub">3000×1500 mm · 4000W · 交换工作台</div>
+    </div>
+    <div class="card-body">
+      <img src="image/laser1.png" alt="激光切割机" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-label">切割范围</span><span class="spec-value">3000×1500 mm</span></div>
+        <div class="spec-row"><span class="spec-label">激光功率</span><span class="spec-value">4000W (RK光纤)</span></div>
+        <div class="spec-row"><span class="spec-label">最大加速度</span><span class="spec-value">0.6G</span></div>
+        <div class="spec-row"><span class="spec-label">定位精度</span><span class="spec-value">±0.01 mm</span></div>
+        <div class="spec-row"><span class="spec-label">切割厚度</span><span class="spec-value">0.1‑20 mm (依材质)</span></div>
+      </div>
+      <div class="badge-group">
+        <span class="badge">自动聚焦</span><span class="badge orange">Delta 伺服</span>
+        <span class="badge green">Schneider 电气</span><span class="badge purple">蛙跳/断点续切</span>
+      </div>
+      <button class="expand-toggle" data-target="detail7">📄 展开详情 <span class="arrow">▾</span></button>
+      <div id="detail7" class="detail-wrapper">
+        <div class="detail-content">
+          <p><strong>Structure:</strong> gantry dual drive, welded bed, high stability, X/Y single axis positioning speed ≥80m/min, max acceleration 1G (dual drive).</p>
+          <p><strong>Function:</strong> automatic focusing cutting head, non-contact height tracking, anti-collision, auto edge finding, auto positioning, rollback.</p>
+          <p><strong>CNC system:</strong> simple interface, offline programming, auto nesting, supports CAD/CAM, multiple languages (Chinese, English, Korean, Russian etc.)</p>
+          <p><strong>Special functions:</strong> frog jumping, high-speed following, slope modulation, breakpoint continuation, interpolation compensation, flight punching, laser marking, expert database.</p>
+          <p><strong>Main configuration:</strong> RK 4000W laser, JQ auto focusing head, YBL racks, PEK guide rails, Delta servo, Schneider electrical, BC CNC, special chiller.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. 数控车床 CK6130-700L -->
+  <div class="card green-edge">
+    <div class="card-header" data-target="detail8">
+      <h2>⚙ CNC Lathe CK6130-700L</h2>
+      <div class="sub">GSK980TDI · 电动刀架</div>
+    </div>
+    <div class="card-body">
+<img src="image/lathe1.png" alt="车床" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">      <div class="spec-list">
+        <div class="spec-row"><span class="spec-label">控制系统</span><span class="spec-value">GSK980TDI</span></div>
+        <div class="spec-row"><span class="spec-label">刀架</span><span class="spec-value">电动 4工位</span></div>
+        <div class="spec-row"><span class="spec-label">卡盘</span><span class="spec-value">手动三爪</span></div>
+        <div class="spec-row"><span class="spec-label">导轨</span><span class="spec-value">双山导轨</span></div>
+      </div>
+      <div class="badge-group"><span class="badge">排刀架可选</span><span class="badge orange">GSK 系统</span></div>
+      <button class="expand-toggle" data-target="detail8">📄 展开详情 <span class="arrow">▾</span></button>
+      <div id="detail8" class="detail-wrapper">
+        <div class="detail-content">
+          <p><strong>Model:</strong> CK6130-700L. Gang type tool post, 3-jaw manual chuck, double mountain guide.</p>
+          <p><strong>CNC system:</strong> GSK980TDI. Electric 4-station toolpost, manual tailstock.</p>
+          <p>Other machine photos available on request.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. NC 扭轴折弯机 100T/3200 E300P -->
+  <div class="card grey-edge">
+    <div class="card-header" data-target="detail9">
+      <h2>▣ NC Press Brake</h2>
+      <div class="sub">扭轴同步 · 100T/3200 · Estun E300P</div>
+    </div>
+    <div class="card-body">
+<img src="image/nc-press-brake1.png" alt="扭轴折弯机" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">      <div class="spec-list">
+        <div class="spec-row"><span class="spec-label">公称力</span><span class="spec-value">1000 kN</span></div>
+        <div class="spec-row"><span class="spec-label">工作台长度</span><span class="spec-value">3200 mm</span></div>
+        <div class="spec-row"><span class="spec-label">滑块行程</span><span class="spec-value">150 mm</span></div>
+        <div class="spec-row"><span class="spec-label">后挡料行程</span><span class="spec-value">500 mm</span></div>
+        <div class="spec-row"><span class="spec-label">控制器</span><span class="spec-value">Estun E300P</span></div>
+      </div>
+      <div class="badge-group">
+        <span class="badge">Rexroth 阀</span><span class="badge orange">Sunny 泵</span>
+        <span class="badge green">NOK 密封</span>
+      </div>
+      <button class="expand-toggle" data-target="detail9">📄 展开详情 <span class="arrow">▾</span></button>
+      <div id="detail9" class="detail-wrapper">
+        <div class="detail-content">
+          <p><strong>Main features:</strong> whole steel welded structure, vibration aging stress relief, torsion bar with hydraulics, integrated hydraulic system, upper transmission, pressure control, foot-petal switch (Karcon Korea), segmented upper punch, multi-V-die.</p>
+          <p><strong>Back gauge & upper ram:</strong> automatic control, micro adjustment by manual and digital display. Oblique steel solid deflection compensation.</p>
+          <p><strong>Main parts:</strong> WNM main motor, Schneider electrics, Yuhua cylinder, NOK seal, Rexroth valve, Sunny pump, Estun E300P controller, fast clamping, front/back protection fence.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. 意大利 MAPER HT071 剪板机数控系统 -->
+  <div class="card orange-edge">
+    <div class="card-header" data-target="detail10">
+      <h2>📟 MAPER HT071</h2>
+      <div class="sub">剪板机专用 CNC · 52年自动化经验</div>
+    </div>
+    <div class="card-body">
+<img src="image/ht071-1.png" alt="控制器面板" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">      <div class="spec-list">
+        <div class="spec-row"><span class="spec-label">电源</span><span class="spec-value">24Vdc · 7.2W</span></div>
+        <div class="spec-row"><span class="spec-label">计数频率</span><span class="spec-value">40KHz (4倍频 160KHz)</span></div>
+        <div class="spec-row"><span class="spec-label">程序存储</span><span class="spec-value">99个程序 × 20循环</span></div>
+        <div class="spec-row"><span class="spec-label">防护等级</span><span class="spec-value">IP65 (聚碳酸酯)</span></div>
+      </div>
+      <div class="badge-group">
+        <span class="badge">偏移功能</span><span class="badge orange">不锈钢外壳</span>
+        <span class="badge purple">毫米/英寸切换</span>
+      </div>
+      <button class="expand-toggle" data-target="detail10">📄 展开详情 <span class="arrow">▾</span></button>
+      <div id="detail10" class="detail-wrapper">
+        <div class="detail-content">
+          <p><strong>MAPER Automation</strong> – 52 years experience in metal plate processing (bending, shearing, rolling, stamping, plasma).</p>
+          <p><strong>HT071</strong> – positioning and axis control, editable parameters, flash memory (no battery), clear display, user-friendly keyboard.</p>
+          <p><strong>Technical:</strong> 24Vdc, 7.2W; 4 insulation layers, relay output, optical insulator, 6 LED digits + 2 digits for cycle/program. 99 programs × 20 cycles. Modes: manual, semi-auto, auto, continuous auto. Offset, selection, total counter, timer, position OK, mm/inch display.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. 激光切割机 3000W/4000W 技术数据补充 -->
+  <div class="card blue-edge">
+    <div class="card-header" data-target="detail11">
+      <h2>📊 Laser 3000W / 4000W</h2>
+      <div class="sub">切割厚度对照 · 技术参数</div>
+    </div>
+    <div class="card-body">
+<img src="image/laser-chart1.png" alt="激光数据" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">      <div class="spec-list">
+        <div class="spec-row"><span class="spec-label">3000W 碳钢</span><span class="spec-value">≤20 mm</span></div>
+        <div class="spec-row"><span class="spec-label">4000W 碳钢</span><span class="spec-value">≤25 mm</span></div>
+        <div class="spec-row"><span class="spec-label">不锈钢 3000W</span><span class="spec-value">≤12 mm</span></div>
+        <div class="spec-row"><span class="spec-label">不锈钢 4000W</span><span class="spec-value">≤16 mm</span></div>
+      </div>
+      <div class="badge-group">
+        <span class="badge">氮气/氧气/空气</span><span class="badge orange">自动寻边</span>
+        <span class="badge green">专家数据库</span>
+      </div>
+      <button class="expand-toggle" data-target="detail11">📄 展开详情 <span class="arrow">▾</span></button>
+      <div id="detail11" class="detail-wrapper">
+        <div class="detail-content">
+          <p>Detailed cutting thickness diagrams for 3000W and 4000W fiber laser sources. Includes carbon steel, stainless steel, aluminum, brass, copper with different assist gases (N₂, O₂, air).</p>
+          <p>Parameters: power, gas pressure, focal position, cutting speed, nozzle diameter. Expert database provides optimal settings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. 水切割机 2060/2080 补充 -->
+  <div class="card purple-edge">
+    <div class="card-header" data-target="detail12">
+      <h2>💧 Waterjet 2060 / 2080</h2>
+      <div class="sub">大型工作台 · 2000×6000 / 8000 mm</div>
+    </div>
+    <div class="card-body">
+<img src="image/waterjet-large1.png" alt="水切割机大型" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin-bottom:18px;">      <div class="spec-list">
+        <div class="spec-row"><span class="spec-label">型号 2060</span><span class="spec-value">2000×6000 mm</span></div>
+        <div class="spec-row"><span class="spec-label">型号 2080</span><span class="spec-value">2000×8000 mm</span></div>
+        <div class="spec-row"><span class="spec-label">高压泵</span><span class="spec-value">FLOW 双向增压</span></div>
+        <div class="spec-row"><span class="spec-label">蓄能器</span><span class="spec-value">HSEC (德国)</span></div>
+      </div>
+      <div class="badge-group">
+        <span class="badge">金属对金属密封</span><span class="badge orange">自动卸压</span>
+        <span class="badge green">自诊断</span>
+      </div>
+      <button class="expand-toggle" data-target="detail12">📄 展开详情 <span class="arrow">▾</span></button>
+      <div id="detail12" class="detail-wrapper">
+        <div class="detail-content">
+          <p>Large-format waterjet cutting tables with flying-arm structure. Same high-pressure system as 2030 series: C50V EHV, FLOW supercharger, HSEC accumulator, Rexroth pump, Siemens PLC.</p>
+          <p>Cutting head with self-correction, easy part replacement. Abrasive control valve with automatic sand suction. NEW-CAM software.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    // 所有展开按钮 + 卡片标题点击
+    const toggles = document.querySelectorAll('.expand-toggle');
+    const headers = document.querySelectorAll('.card-header');
+
+    function toggleDetail(btn) {
+      const targetId = btn.getAttribute('data-target');
+      const detail = document.getElementById(targetId);
+      if (!detail) return;
+
+      const isOpen = detail.classList.contains('open');
+      // 关闭所有其他
+      document.querySelectorAll('.detail-wrapper.open').forEach(el => {
+        if (el.id !== targetId) {
+          el.classList.remove('open');
+          const arrow = document.querySelector(`.expand-toggle[data-target="${el.id}"] .arrow`);
+          if (arrow) arrow.classList.remove('open');
+        }
+      });
+
+      if (!isOpen) {
+        detail.classList.add('open');
+        const arrow = btn.querySelector('.arrow');
+        if (arrow) arrow.classList.add('open');
+      } else {
+        detail.classList.remove('open');
+        const arrow = btn.querySelector('.arrow');
+        if (arrow) arrow.classList.remove('open');
+      }
+    }
+
+    toggles.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleDetail(this);
+      });
+    });
+
+    headers.forEach(header => {
+      header.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        if (!targetId) return;
+        const btn = document.querySelector(`.expand-toggle[data-target="${targetId}"]`);
+        if (btn) toggleDetail(btn);
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
