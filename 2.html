@@ -1548,11 +1548,37 @@
       .product-grid { grid-template-columns: repeat(2, 1fr); }
     }
     /* 手机端 */
-    @media (max-width: 768px) {
-      .product-grid { grid-template-columns: 1fr; }
-      .nav-links { flex-wrap: wrap; justify-content: center; }
-      .hero-slider { height: 60vh; }
-    }
+@media (max-width: 768px) {
+  .product-grid { grid-template-columns: 1fr; }
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+  .nav-links a {
+    font-size: 0.8rem;
+  }
+  .language-switcher {
+    margin-left: 0;
+    margin-top: 4px;
+  }
+  .lang-current {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+  .search-input {
+    width: 100px;
+  }
+  .hero-slider { height: 60vh; }
+  .nav-bar {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .logo {
+    font-size: 1.4rem;
+  }
+}
 /* ========== 搜索框样式 ========== */
 .search-wrapper {
   position: relative;
@@ -1831,7 +1857,7 @@
           <div class="bg-blur"></div>
         <div class="slides">
           <!-- 👇 请替换为您的实际图片路径 -->
-          <img src="image/photo2.png" loading="lazy">
+          <img src="image/photo2.png" >
           <img src="image/photo1.png" loading="lazy">
           <img src="image/photo3.png" loading="lazy">
           <img src="image/photo4.png" loading="lazy">
@@ -1974,8 +2000,9 @@
       <h2 class="section-title" id="contactTitle">联系我们</h2>
       <div style="display: flex; flex-wrap: wrap; gap: 24px; background: #f1f5f9; border-radius: 24px; padding: 32px; margin-top: 10px;" id="contactBox">
         <div style="flex:1; min-width: 200px;">
-          <p><strong>📞 电话：</strong>0086 21 5763 5090</p>
-          <p><strong>📱 手机：</strong>0086 189 3091 5091 / 0086 137 6481 8151</p>
+          <p><strong>📞 电话 & WhatsApp：</strong>0086 137 6481 8151</p>
+            <p><strong>📠 传真：</strong>0086 21 5763 5090</p>
+
           <p><strong>📧 E-mail：</strong>info@fairrich.com</p>
           <p style="padding-left:80px;">sales@fairrich.com</p>
           <p style="padding-left:80px;">support@fairrich.com</p>
@@ -2003,7 +2030,7 @@
         </div>
         <div class="contact-info" style="text-align: right;" id="footerContact">
           <p><strong>👤 国际销售代表：</strong>Senny</p>
-          <p><strong>📞 电话：</strong>0086 21 5763 5090</p>
+          <p><strong>📞 电话：</strong>0086 137 6481 8151</p>
           <p><strong>📱 手机：</strong>0086 189 3091 5091</p>
           <p>&emsp;&emsp;&emsp;0086 137 6481 8151</p>
           <p><strong>📧 E-mail：</strong>info@fairrich.com</p>
@@ -2370,6 +2397,10 @@
   if (onlineChat) onlineChat.textContent = d.onlineChat;
   if (inquiry) inquiry.textContent = d.inquiry;
   if (aboutNav) aboutNav.textContent = d.aboutNav;
+  var newsEmpty = document.getElementById('newsEmptyText');
+if (newsEmpty) newsEmpty.textContent = d.noNews;
+var adminNoNews = document.getElementById('adminNoNewsText');
+if (adminNoNews) adminNoNews.textContent = d.noNews;
 
       var nl = document.querySelectorAll('.nav-links > a, .nav-links > .dropdown > a');
            if (nl.length >= 5) { nl[0].textContent = d.home; nl[1].textContent = d.sectionProducts; nl[2].textContent = d.business; nl[3].textContent = d.news; }
@@ -2386,6 +2417,10 @@
       if (st[0]) st[0].textContent = d.subtitleProducts;
       if (st[1]) st[1].textContent = d.businessSubtitle;
       if (st[2]) st[2].textContent = d.newsSubtitle;
+      var noNewsEl = document.getElementById('noNewsText');
+      if (noNewsEl) noNewsEl.textContent = d.noNews;
+      var adminNoNews = document.getElementById('adminNoNewsText');
+if (adminNoNews) adminNoNews.textContent = d.noNews;
 
       // 更新核心产品与服务 - 产品卡片
       var p1_title = document.getElementById('p1_title');
@@ -2434,6 +2469,8 @@
 
       localStorage.setItem('preferredLanguage', lang);
       updateHomeContent(lang);
+      renderNews();
+setTimeout(function() { renderNews(); }, 100);
 
     }
 
@@ -4329,8 +4366,7 @@ function closeAllDetails() {
           greetingQ: '👋 您好，请问有什么需要帮助？',
           greetingA: '您好！欢迎咨询上海釜瑞实业有限公司。我们专业生产数控折弯机、剪板机、激光切割机、加油机及配件等精密机械设备。请问有什么可以帮助您的？',
           specsQ: '📋 有参数和具体规格需要咨询吗？',
-          specsA: '如需了解更多产品参数细节与技术规格，欢迎随时联系我们：<br><br>📞 电话：0086 21 5763 5090<br>📱 手机：0086 189 3091 5091 / 0086 137 6481 8151<br>📧 邮箱：info@fairrich.com<br>🌐 网址：www.fairrich.com<br><br>如果您希望我们主动与您联系，请在下方输入框中留下您的联系方式（邮箱、电话、微信、WhatsApp均可），我们的销售团队将尽快为您提供详细资料。<br><br>📋 <a data-target="inquiry_form" style="color:#1e3a5f;cursor:pointer;font-weight:500;">👉 点击此处留言咨询</a>',
-          materialQ: '🔩 请问加工材质是什么？',
+          specsA: '如需了解更多产品参数细节与技术规格，欢迎随时联系我们：<br><br>📠 传真：0086 21 5763 5090<br>📱 手机/WhatsApp：0086 189 3091 5091 / 0086 137 6481 8151<br>📧 邮箱：info@fairrich.com<br>🌐 网址：www.fairrich.com<br><br>如果您希望我们主动与您联系，请在下方输入框中留下您的联系方式（邮箱、电话、微信、WhatsApp均可），我们的销售团队将尽快为您提供详细资料。<br><br>📋 <a data-target="inquiry_form" style="color:#1e3a5f;cursor:pointer;font-weight:500;">👉 点击此处留言咨询</a>',          materialQ: '🔩 请问加工材质是什么？',
           materialA: '请问您需要加工什么材质呢？<br><br>🔩 不锈钢<br>🔩 碳钢/钢铁<br>🔩 镀锌板<br>🔩 铝合金<br>🔩 铜板<br>🔩 其他材质<br><br>请在下方输入框中留言告知，以便我们为您推荐最合适的机型配置。',
           transportQ: '🚚 运输方式是怎样的？',
           transportA: '我们提供多种运输方式供您选择：<br><br>🚢 <strong>海运</strong>：适用于大批量订单，经济实惠<br>✈️ <strong>空运</strong>：适用于紧急订单，速度最快<br>🚂 <strong>铁路运输</strong>：适用于欧亚大陆沿线国家<br>🚚 <strong>公路陆运</strong>：适用于周边邻国及短途运输<br><br>具体运输方式和运输时间需根据您所在国家/地区及距离远近而定。请在下方输入框中告知您的目的地，我们将为您提供最优物流方案。',
@@ -4340,7 +4376,7 @@ function closeAllDetails() {
           afterA: '我们提供完善的售后服务保障：<br><br>🛠️ <strong>质保期</strong>：正常情况一年（可延保）<br>📞 <strong>技术支持</strong>：工程师远程指导或上门服务<br>📦 <strong>配件供应</strong>：长期提供原厂正品配件<br>📋 <strong>定期维护</strong>：建议每季度设备检查<br><br>如有特殊售后需求，请在下方输入框中留言说明。',
           productPrefix: '点击下方链接查看产品详情：',
           productLink: '👉 点击此处查看 ',
-          msgReceived: '✅ 您的留言已收到！我们的销售团队会尽快与您联系。如需进一步沟通，请继续留言或直接拨打：<br>📞 0086 21 5763 5090<br>📧 info@fairrich.com',
+          msgReceived: '✅ 您的留言已收到！我们的销售团队会尽快与您联系。如需进一步沟通，请继续留言或直接拨打：<br>📞 0086 137 6481 8151<br>📧 info@fairrich.com',
           productQ1: '📐 折弯机 - 专业钣金折弯解决方案',
           productQ2: '✂️ 剪板机 - 高效精准板材裁切',
           productQ3: '🔧 激光切割机 - 薄板厚板精密切割',
@@ -4355,8 +4391,7 @@ function closeAllDetails() {
           greetingQ: '👋 Hello, how can I help you?',
           greetingA: 'Hello! Welcome to Shanghai Fairrich Industrial Co., Ltd. We specialize in CNC press brakes, shearing machines, laser cutters, fuel dispensers and accessories. How may I assist you today?',
           specsQ: '📋 Need detailed specs & parameters?',
-          specsA: 'For more product details and technical specifications, please contact us:<br><br>📞 Tel: 0086 21 5763 5090<br>📱 Mobile: 0086 189 3091 5091 / 0086 137 6481 8151<br>📧 E-mail: info@fairrich.com<br>🌐 Web: www.fairrich.com<br><br>If you\'d like us to contact you, please leave your info below.<br><br>📋 <a data-target="inquiry_form" style="color:#1e3a5f;cursor:pointer;font-weight:500;">👉 Click here to leave a message</a>',
-          materialQ: '🔩 What material do you process?',
+          specsA: 'For more product details and technical specifications, please contact us:<br><br>📠 Fax: 0086 21 5763 5090<br>📱 Mobile/WhatsApp: 0086 189 3091 5091 / 0086 137 6481 8151<br>📧 E-mail: info@fairrich.com<br>🌐 Web: www.fairrich.com<br><br>If you\'d like us to contact you, please leave your info below.<br><br>📋 <a data-target="inquiry_form" style="color:#1e3a5f;cursor:pointer;font-weight:500;">👉 Click here to leave a message</a>',          materialQ: '🔩 What material do you process?',
           materialA: 'What material do you need to process?<br><br>🔩 Stainless Steel<br>🔩 Carbon Steel<br>🔩 Galvanized Sheet<br>🔩 Aluminum Alloy<br>🔩 Copper Plate<br>🔩 Other Materials<br><br>Please let us know so we can recommend the best machine.',
           transportQ: '🚚 What shipping methods are available?',
           transportA: 'We offer multiple shipping options:<br><br>🚢 <strong>Sea Freight</strong>: Economical for bulk orders<br>✈️ <strong>Air Freight</strong>: Fastest for urgent orders<br>🚂 <strong>Rail Transport</strong>: Ideal for Eurasia routes<br>🚚 <strong>Road Transport</strong>: Best for neighboring countries<br><br>Shipping time depends on your destination. Please tell us your country/region.',
@@ -4366,7 +4401,7 @@ function closeAllDetails() {
           afterA: 'Our after-sales service includes:<br><br>🛠️ <strong>Warranty</strong>: 1 year standard (extendable)<br>📞 <strong>Tech Support</strong>: Remote or on-site service<br>📦 <strong>Spare Parts</strong>: Genuine parts long-term supply<br>📋 <strong>Maintenance</strong>: Quarterly check-up recommended.',
           productPrefix: 'Click below to view product details:',
           productLink: '👉 Click to view ',
-          msgReceived: '✅ Your message has been received! Our sales team will contact you soon. You can also call us at:<br>📞 0086 21 5763 5090<br>📧 info@fairrich.com',
+          msgReceived: '✅ Your message has been received! Our sales team will contact you soon. You can also call us at:<br>📞 0086 137 6481 8151<br>📧 info@fairrich.com',
           productQ1: '📐 Press Brake - Sheet Metal Bending',
           productQ2: '✂️ Shearing Machine - Precision Cutting',
           productQ3: '🔧 Laser Cutter - Plate Cutting',
@@ -4381,9 +4416,7 @@ function closeAllDetails() {
           greetingQ: '👋 مرحبًا، كيف يمكنني مساعدتك؟',
           greetingA: 'مرحبًا! مرحبًا بكم في شركة Shanghai Fairrich Industrial. نحن متخصصون في مكابح الضغط CNC وآلات القص وقواطع الليزر وموزعات الوقود. كيف يمكنني مساعدتكم؟',
           specsQ: '📋 هل تحتاج إلى مواصفات ومعايير مفصلة؟',
-          specsA: 'لمزيد من التفاصيل، يرجى الاتصال بنا:<br><br>📞 هاتف: 0086 21 5763 5090<br>📱 جوال: 0086 189 3091 5091<br>📧 بريد: info@fairrich.com<br>🌐 ويب: www.fairrich.com',
-          materialQ: '🔩 ما هي المواد التي تعالجها؟',
-          materialA: 'ما هي المواد التي تحتاج إلى معالجتها؟<br><br>🔩 فولاذ مقاوم للصدأ<br>🔩 فولاذ كربوني<br>🔩 صفائح مجلفنة<br>🔩 سبائك الألومنيوم<br>🔩 ألواح نحاسية<br>🔩 مواد أخرى',
+          specsA: '\u202Bلمزيد من التفاصيل، يرجى الاتصال بنا:<br><br>📠 فاكس: 0086 21 5763 5090<br>📱 جوال/WhatsApp: 0086 189 3091 5091 / 0086 137 6481 8151<br>📧 بريد: info@fairrich.com<br>🌐 ويب: www.fairrich.com\u202C',          materialA: 'ما هي المواد التي تحتاج إلى معالجتها؟<br><br>🔩 فولاذ مقاوم للصدأ<br>🔩 فولاذ كربوني<br>🔩 صفائح مجلفنة<br>🔩 سبائك الألومنيوم<br>🔩 ألواح نحاسية<br>🔩 مواد أخرى',
           transportQ: '🚚 ما هي طرق الشحن المتاحة؟',
           transportA: 'نقدم خيارات شحن متعددة:<br><br>🚢 الشحن البحري: اقتصادي للطلبات الكبيرة<br>✈️ الشحن الجوي: الأسرع للطلبات العاجلة<br>🚂 النقل بالسكك الحديدية<br>🚚 النقل البري: للدول المجاورة',
           quoteQ: '💰 كيف تحصل على عرض سعر؟',
@@ -4392,7 +4425,7 @@ function closeAllDetails() {
           afterA: 'تشمل خدمة ما بعد البيع:<br><br>🛠️ الضمان: سنة واحدة قياسية<br>📞 الدعم الفني: عن بعد أو في الموقع<br>📦 قطع الغيار: توريد طويل الأمد<br>📋 الصيانة: فحص ربع سنوي',
           productPrefix: 'انقر أدناه لعرض تفاصيل المنتج:',
           productLink: '👉 انقر للمشاهدة ',
-          msgReceived: '✅ تم استلام رسالتك! سيتصل بك فريق المبيعات قريبًا.<br>📞 0086 21 5763 5090<br>📧 info@fairrich.com',
+          msgReceived: '✅ تم استلام رسالتك! سيتصل بك فريق المبيعات قريبًا.<br>📞 0086 137 6481 8151<br>📧 info@fairrich.com',
           productQ1: '📐 مكابح الضغط - ثني الصفائح المعدنية',
           productQ2: '✂️ آلة القص - قطع دقيق',
           productQ3: '🔧 قاطع ليزر - قطع الألواح',
@@ -4406,8 +4439,7 @@ function closeAllDetails() {
           greetingQ: '👋 Hallo, wie kann ich helfen?',
           greetingA: 'Hallo! Willkommen bei Shanghai Fairrich Industrial. Wir sind spezialisiert auf CNC-Abkantpressen, Schlagscheren, Laserschneider und Zapfsäulen. Wie kann ich Ihnen helfen?',
           specsQ: '📋 Benötigen Sie detaillierte Spezifikationen?',
-          specsA: 'Für weitere Details kontaktieren Sie uns:<br><br>📞 Tel: 0086 21 5763 5090<br>📱 Mobil: 0086 189 3091 5091<br>📧 E-mail: info@fairrich.com<br>🌐 Web: www.fairrich.com',
-          materialQ: '🔩 Welches Material bearbeiten Sie?',
+          specsA: 'Für weitere Details kontaktieren Sie uns:<br><br>📠 Fax: 0086 21 5763 5090<br>📱 Mobil/WhatsApp: 0086 189 3091 5091 / 0086 137 6481 8151<br>📧 E-mail: info@fairrich.com<br>🌐 Web: www.fairrich.com',          materialQ: '🔩 Welches Material bearbeiten Sie?',
           materialA: 'Welches Material möchten Sie bearbeiten?<br><br>🔩 Edelstahl<br>🔩 Kohlenstoffstahl<br>🔩 Verzinktes Blech<br>🔩 Aluminiumlegierung<br>🔩 Kupferplatte<br>🔩 Andere Materialien',
           transportQ: '🚚 Welche Versandmethoden gibt es?',
           transportA: 'Wir bieten mehrere Versandoptionen:<br><br>🚢 Seefracht: Wirtschaftlich für Großbestellungen<br>✈️ Luftfracht: Am schnellsten<br>🚂 Bahntransport: Ideal für Eurasien<br>🚚 Straßentransport: Für Nachbarländer',
@@ -4417,7 +4449,7 @@ function closeAllDetails() {
           afterA: 'Unser Kundendienst umfasst:<br><br>🛠️ Garantie: 1 Jahr Standard<br>📞 Technischer Support<br>📦 Ersatzteile: Langzeitversorgung<br>📋 Wartung: Vierteljährlich empfohlen',
           productPrefix: 'Klicken Sie unten für Produktdetails:',
           productLink: '👉 Klicken zum Anzeigen ',
-          msgReceived: '✅ Ihre Nachricht wurde empfangen!<br>📞 0086 21 5763 5090<br>📧 info@fairrich.com',
+          msgReceived: '✅ Ihre Nachricht wurde empfangen!<br>📞 0086 137 6481 8151<br>📧 info@fairrich.com',
           productQ1: '📐 Abkantpresse - Blechbiegen',
           productQ2: '✂️ Schlagschere - Präzisionsschnitt',
           productQ3: '🔧 Laserschneider - Plattenschneiden',
@@ -4431,8 +4463,7 @@ function closeAllDetails() {
           greetingQ: '👋 Hola, ¿cómo puedo ayudar?',
           greetingA: '¡Hola! Bienvenido a Shanghai Fairrich Industrial. Somos especialistas en plegadoras CNC, cizallas, cortadoras láser y surtidores. ¿En qué puedo ayudarle?',
           specsQ: '📋 ¿Necesita especificaciones detalladas?',
-          specsA: 'Para más detalles, contáctenos:<br><br>📞 Tel: 0086 21 5763 5090<br>📱 Móvil: 0086 189 3091 5091<br>📧 E-mail: info@fairrich.com<br>🌐 Web: www.fairrich.com',
-          materialQ: '🔩 ¿Qué material procesa?',
+          specsA: 'Para más detalles, contáctenos:<br><br>📠 Fax: 0086 21 5763 5090<br>📱 Móvil/WhatsApp: 0086 189 3091 5091 / 0086 137 6481 8151<br>📧 E-mail: info@fairrich.com<br>🌐 Web: www.fairrich.com',          materialQ: '🔩 ¿Qué material procesa?',
           materialA: '¿Qué material necesita procesar?<br><br>🔩 Acero inoxidable<br>🔩 Acero al carbono<br>🔩 Chapa galvanizada<br>🔩 Aleación de aluminio<br>🔩 Placa de cobre<br>🔩 Otros materiales',
           transportQ: '🚚 ¿Qué métodos de envío hay?',
           transportA: 'Ofrecemos múltiples opciones:<br><br>🚢 Marítimo: Económico para grandes pedidos<br>✈️ Aéreo: El más rápido<br>🚂 Ferrocarril: Ideal para Eurasia<br>🚚 Terrestre: Para países vecinos',
@@ -4442,7 +4473,7 @@ function closeAllDetails() {
           afterA: 'Nuestro servicio incluye:<br><br>🛠️ Garantía: 1 año estándar<br>📞 Soporte técnico<br>📦 Repuestos originales<br>📋 Mantenimiento trimestral',
           productPrefix: 'Haga clic abajo para detalles:',
           productLink: '👉 Haga clic para ver ',
-          msgReceived: '✅ ¡Mensaje recibido! Le contactaremos pronto.<br>📞 0086 21 5763 5090<br>📧 info@fairrich.com',
+          msgReceived: '✅ ¡Mensaje recibido! Le contactaremos pronto.<br>📞 0086 137 6481 8151<br>📧 info@fairrich.com',
           productQ1: '📐 Plegadora - Doblado de chapa',
           productQ2: '✂️ Cizalla - Corte de precisión',
           productQ3: '🔧 Cortadora Láser',
@@ -4456,8 +4487,7 @@ function closeAllDetails() {
           greetingQ: '👋 Olá, como posso ajudar?',
           greetingA: 'Olá! Bem-vindo à Shanghai r Industrial. Somos especializados em dobradeiras CNC, guilhotinas, cortadoras a laser e bombas de combustível. Como posso ajudar?',
           specsQ: '📋 Precisa de especificações detalhadas?',
-          specsA: 'Para mais detalhes, entre em contato:<br><br>📞 Tel: 0086 21 5763 5090<br>📱 Cel: 0086 189 3091 5091<br>📧 E-mail: info@fairrich.com<br>🌐 Web: www.fairrich.com',
-          materialQ: '🔩 Qual material você processa?',
+          specsA: 'Para mais detalhes, entre em contato:<br><br>📠 Fax: 0086 21 5763 5090<br>📱 Celular/WhatsApp: 0086 189 3091 5091 / 0086 137 6481 8151<br>📧 E-mail: info@fairrich.com<br>🌐 Web: www.fairrich.com',          materialQ: '🔩 Qual material você processa?',
           materialA: 'Qual material precisa processar?<br><br>🔩 Aço inoxidável<br>🔩 Aço carbono<br>🔩 Chapa galvanizada<br>🔩 Liga de alumínio<br>🔩 Placa de cobre<br>🔩 Outros',
           transportQ: '🚚 Quais métodos de envio?',
           transportA: 'Oferecemos várias opções:<br><br>🚢 Marítimo: Econômico<br>✈️ Aéreo: Mais rápido<br>🚂 Ferroviário: Ideal para Eurásia<br>🚚 Rodoviário: Países vizinhos',
@@ -4467,7 +4497,7 @@ function closeAllDetails() {
           afterA: 'Nosso serviço inclui:<br><br>🛠️ Garantia: 1 ano<br>📞 Suporte técnico<br>📦 Peças originais<br>📋 Manutenção trimestral',
           productPrefix: 'Clique abaixo para detalhes:',
           productLink: '👉 Clique para ver ',
-          msgReceived: '✅ Mensagem recebida! Entraremos em contato.<br>📞 0086 21 5763 5090<br>📧 info@fairrich.com',
+          msgReceived: '✅ Mensagem recebida! Entraremos em contato.<br>📞 0086 137 6481 8151<br>📧 info@fairrich.com',
           productQ1: '📐 Dobradeira - Dobra de chapas',
           productQ2: '✂️ Guilhotina - Corte preciso',
           productQ3: '🔧 Cortadora Laser',
@@ -4481,8 +4511,7 @@ function closeAllDetails() {
           greetingQ: '👋 Bună ziua, cu ce vă pot ajuta?',
           greetingA: 'Bună ziua! Bine ați venit la Shanghai Fairrich Industrial. Suntem specializați în prese de îndoit CNC, mașini de tăiat, tăietoare laser și distribuitoare de combustibil. Cu ce vă pot ajuta?',
           specsQ: '📋 Aveți nevoie de specificații detaliate?',
-          specsA: 'Pentru detalii, contactați-ne:<br><br>📞 Tel: 0086 21 5763 5090<br>📱 Mobil: 0086 189 3091 5091<br>📧 E-mail: info@fairrich.com<br>🌐 Web: www.fairrich.com',
-          materialQ: '🔩 Ce material prelucrați?',
+          specsA: 'Pentru detalii, contactați-ne:<br><br>📠 Fax: 0086 21 5763 5090<br>📱 Mobil/WhatsApp: 0086 189 3091 5091 / 0086 137 6481 8151<br>📧 E-mail: info@fairrich.com<br>🌐 Web: www.fairrich.com',          materialQ: '🔩 Ce material prelucrați?',
           materialA: 'Ce material trebuie prelucrat?<br><br>🔩 Oțel inoxidabil<br>🔩 Oțel carbon<br>🔩 Tablă zincată<br>🔩 Aliaj de aluminiu<br>🔩 Plăci de cupru<br>🔩 Altele',
           transportQ: '🚚 Ce metode de transport există?',
           transportA: 'Oferim mai multe opțiuni:<br><br>🚢 Maritim: Economic<br>✈️ Aerian: Cel mai rapid<br>🚂 Feroviar: Ideal pentru Eurasia<br>🚚 Rutier: Pentru țări vecine',
@@ -4492,7 +4521,7 @@ function closeAllDetails() {
           afterA: 'Serviciul nostru include:<br><br>🛠️ Garanție: 1 an<br>📞 Suport tehnic<br>📦 Piese originale<br>📋 Întreținere trimestrială',
           productPrefix: 'Faceți clic pentru detalii:',
           productLink: '👉 Faceți clic pentru a vedea ',
-          msgReceived: '✅ Mesaj primit! Vă vom contacta.<br>📞 0086 21 5763 5090<br>📧 info@fairrich.com',
+          msgReceived: '✅ Mesaj primit! Vă vom contacta.<br>📞 0086 137 6481 8151<br>📧 info@fairrich.com',
           productQ1: '📐 Presă de îndoit',
           productQ2: '✂️ Mașină de tăiat',
           productQ3: '🔧 Tăietor laser',
@@ -4506,8 +4535,7 @@ function closeAllDetails() {
           greetingQ: '👋 Здравствуйте, чем могу помочь?',
           greetingA: 'Здравствуйте! Добро пожаловать в Shanghai Fairrich Industrial. Мы специализируемся на листогибах с ЧПУ, ножницах, лазерных резаках и топливных колонках. Чем я могу помочь?',
           specsQ: '📋 Нужны подробные спецификации?',
-          specsA: 'Для получения подробностей свяжитесь с нами:<br><br>📞 Тел: 0086 21 5763 5090<br>📱 Моб: 0086 189 3091 5091<br>📧 E-mail: info@fairrich.com<br>🌐 Сайт: www.fairrich.com',
-          materialQ: '🔩 Какой материал обрабатываете?',
+          specsA: 'Для получения подробностей свяжитесь с нами:<br><br>📠 Факс: 0086 21 5763 5090<br>📱 Моб/WhatsApp: 0086 189 3091 5091 / 0086 137 6481 8151<br>📧 E-mail: info@fairrich.com<br>🌐 Сайт: www.fairrich.com',          materialQ: '🔩 Какой материал обрабатываете?',
           materialA: 'Какой материал нужно обработать?<br><br>🔩 Нержавеющая сталь<br>🔩 Углеродистая сталь<br>🔩 Оцинкованный лист<br>🔩 Алюминиевый сплав<br>🔩 Медная пластина<br>🔩 Другое',
           transportQ: '🚚 Какие способы доставки?',
           transportA: 'Предлагаем несколько вариантов:<br><br>🚢 Морской: Экономично<br>✈️ Авиа: Быстрее всего<br>🚂 Ж/д: Для Евразии<br>🚚 Авто: Для соседних стран',
@@ -4517,7 +4545,7 @@ function closeAllDetails() {
           afterA: 'Обслуживание включает:<br><br>🛠️ Гарантия: 1 год<br>📞 Техподдержка<br>📦 Запчасти<br>📋 Ежеквартальное ТО',
           productPrefix: 'Нажмите для подробностей:',
           productLink: '👉 Нажмите для просмотра ',
-          msgReceived: '✅ Сообщение получено! Мы свяжемся с вами.<br>📞 0086 21 5763 5090<br>📧 info@fairrich.com',
+          msgReceived: '✅ Сообщение получено! Мы свяжемся с вами.<br>📞 0086 137 6481 8151<br>📧 info@fairrich.com',
           productQ1: '📐 Листогиб - гибка металла',
           productQ2: '✂️ Ножницы - точный рез',
           productQ3: '🔧 Лазерный резак',
@@ -4577,54 +4605,39 @@ function closeAllDetails() {
         chatWindow.classList.remove('show');
       }
 
-      function bindLinkEvents() {
-        var links = chatBody.querySelectorAll('a[data-target]');
-        links.forEach(function(link) {
-          link.addEventListener('click', function() {
-            var target = this.getAttribute('data-target');
-            var clickedText = this.textContent;
-            addBubble(clickedText, true);
-            var replyKey = '';
-
-            if (target === 'greeting') replyKey = 'greetingA';
-            else if (target === 'specs') {
-              replyKey = 'specsA';
-            } else if (target === 'inquiry_form') {
-              // 点击表单链接：关闭聊天框，打开询价表单
-              closeChat();
-              var iOverlay = document.getElementById('inquiryOverlay');
-              if (iOverlay) {
-                iOverlay.style.display = 'flex';
-              }
-              return;
-            }
-            else if (target === 'material') replyKey = 'materialA';
-            else if (target === 'transport') replyKey = 'transportA';
-            else if (target === 'quote') replyKey = 'quoteA';
-            else if (target === 'after_sales') replyKey = 'afterA';
-            else if (target === 'inquiry_form') {
-              document.getElementById('inquiryOverlay').classList.add('show');
-              return;
-            }
-            else if (target === 'inquiry_form') {
-              setTimeout(function() {
-                document.getElementById('inquiryOverlay').classList.add('show');
-              }, 300);
-              return;
-            }
-            setTimeout(function() {
-              if (replyKey) {
-                addBubble(t(replyKey), false);
-                // 重新绑定新气泡中的链接
-                bindLinkEvents();
-              } else {
-                var productName = target;
-                addBubble(t('productPrefix') + '<br><br>🔗 <a href="#" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;" onclick="event.preventDefault(); openProductFromMenu(\'' + productName + '\'); return false;">' + t('productLink') + productName + '</a>', false);
-              }
-            }, 300);
-          });
-        });
+function bindLinkEvents() {
+  var links = chatBody.querySelectorAll('a[data-target]:not(.qa-bound)');
+  links.forEach(function(link) {
+    link.classList.add('qa-bound');
+    link.addEventListener('click', function() {
+      var target = this.getAttribute('data-target');
+      var clickedText = this.textContent;
+      addBubble(clickedText, true);
+      var replyKey = '';
+      if (target === 'greeting') replyKey = 'greetingA';
+      else if (target === 'specs') replyKey = 'specsA';
+      else if (target === 'inquiry_form') {
+        closeChat();
+        var iOverlay = document.getElementById('inquiryOverlay');
+        if (iOverlay) iOverlay.style.display = 'flex';
+        return;
       }
+      else if (target === 'material') replyKey = 'materialA';
+      else if (target === 'transport') replyKey = 'transportA';
+      else if (target === 'quote') replyKey = 'quoteA';
+      else if (target === 'after_sales') replyKey = 'afterA';
+      setTimeout(function() {
+        if (replyKey) {
+          addBubble(t(replyKey), false);
+          bindLinkEvents();
+        } else {
+          var productName = target;
+          addBubble(t('productPrefix') + '<br><br>🔗 <a href="#" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;" onclick="event.preventDefault(); openProductFromMenu(\'' + productName + '\'); return false;">' + t('productLink') + productName + '</a>', false);
+        }
+      }, 300);
+    });
+  });
+}
 
       chatBtn.addEventListener('click', function() {
         if (isOpen) { closeChat(); } else { openChat(); }
@@ -4781,8 +4794,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!grid) return;
 
       if (!newsData || newsData.length === 0) {
-        grid.innerHTML = '<div class="news-empty">暂无动态</div>';
-        return;
+      grid.innerHTML = '<div class="news-empty" id="newsEmptyText">' + ((translations[currentLang] || translations['en']).noNews || '暂无动态') + '</div>';return;
       }
 
       grid.innerHTML = '';
@@ -4928,13 +4940,14 @@ document.addEventListener('DOMContentLoaded', function() {
           adv4Title: '全球服务', adv4Desc: '立足中国，发货全球，长期合作，共同发展。',
           footerSlogan: '真诚期待与您建立长期稳定的合作关系，<br>如需其他产品或帮助，请随时与我们联系。<br>感谢您的信任与支持！',
           copyright: '© 2010 上海釜瑞实业有限公司 版权所有',
-          contactPhone: '📞 电话：', contactMobile: '📱 手机：', contactEmail: '📧 E-mail：',
+          contactPhone: '📠 传真：', contactMobile: '📱 手机/WhatsApp：', contactEmail: '📧 E-mail：',
           contactAddr: '📍 地址：', contactHours: '🕘 工作时间：', contactWeb: '🌐 网址：',
           addrText: '中国(上海)自由贸易试验区临港新片区环湖西一路333号',
           hoursText: '周一至周五 8:00-11:30 / 13:30-17:30', webText: 'www.fairrich.com',
           footerRep: '👤 负责人：', footerPhone: '📞 电话：',
           logoText: '釜瑞<span>实业</span>',
-          footerLogo: '釜瑞实业'
+          footerLogo: '釜瑞实业',
+          noNews: '暂无动态'
         },
         en: {
           aboutP1: '<strong>Shanghai Fairrich Industrial Co., Ltd.</strong> was established in <strong>August 2010</strong>, located in <strong>Lingang New Area, Pudong, Shanghai</strong>. We specialize in CNC press brakes, shearing machines, punch presses, laser cutters, molds, fuel dispensers, and hardware accessories.',
@@ -4949,13 +4962,14 @@ document.addEventListener('DOMContentLoaded', function() {
           adv4Title: 'Global Service', adv4Desc: 'Based in China, shipping worldwide.',
           footerSlogan: 'We sincerely look forward to long-term cooperation.<br>Please contact us for any inquiries.<br>Thank you for your trust!',
           copyright: '© 2010 Shanghai Fairrich Industrial Co., Ltd. All Rights Reserved',
-          contactPhone: '📞 Tel: ', contactMobile: '📱 Mobile: ', contactEmail: '📧 Email: ',
+          contactPhone: '📠 Fax: ', contactMobile: '📱 Mobile/WhatsApp: ', contactEmail: '📧 Email: ',
           contactAddr: '📍 Address: ', contactHours: '🕘 Hours: ', contactWeb: '🌐 Web: ',
           addrText: 'No.333 Huanhu West 1st Rd, Lingang New Area, Shanghai, China',
           hoursText: 'Mon-Fri 8:00-11:30 / 13:30-17:30', webText: 'www.fairrich.com',
           footerRep: '👤 Contact Person: ', footerPhone: '📞 Tel: ',
           logoText: '<span style="color:#1e3a5f;">FAIRRICH</span>',
-          footerLogo: 'FAIRRICH'
+          footerLogo: 'FAIRRICH',
+          noNews: 'No news yet'
         },
         ar: {
           aboutP1: '<strong>Shanghai Fairrich Industrial Co., Ltd.</strong> تأسست في <strong>أغسطس 2010</strong>، وتقع في <strong>منطقة لينقانغ الجديدة، بودونغ، شنغهاي</strong>. متخصصون في مكابح الضغط CNC، آلات القص، قواطع الليزر، القوالب، موزعات الوقود والملحقات.',
@@ -4970,13 +4984,14 @@ document.addEventListener('DOMContentLoaded', function() {
           adv4Title: 'خدمة عالمية', adv4Desc: 'مقرنا في الصين، والشحن إلى جميع أنحاء العالم.',
           footerSlogan: 'نتطلع بصدق إلى تعاون طويل الأمد.<br>يرجى الاتصال بنا لأي استفسارات.<br>شكراً لثقتكم!',
           copyright: '© 2010 Shanghai Fairrich Industrial Co., Ltd. جميع الحقوق محفوظة',
-          contactPhone: '📞 هاتف: ', contactMobile: '📱 جوال: ', contactEmail: '📧 بريد: ',
+          contactPhone: '📠 فاكس: ', contactMobile: '📱 جوال/WhatsApp: ', contactEmail: '📧 بريد: ',
           contactAddr: '📍 عنوان: ', contactHours: '🕘 ساعات: ', contactWeb: '🌐 ويب: ',
           addrText: 'رقم 333 طريق هوانهو الغربي الأول، منطقة لينقانغ الجديدة، شنغهاي، الصين',
           hoursText: 'الإثنين-الجمعة 8:00-11:30 / 13:30-17:30', webText: 'www.fairrich.com',
           footerRep: '👤 جهة الاتصال: ', footerPhone: '📞 هاتف: ',
           logoText: '<span style="color:#1e3a5f;">FAIRRICH</span>',
-          footerLogo: 'FAIRRICH'
+          footerLogo: 'FAIRRICH',
+          noNews: 'لا توجد أخبار بعد'
         },
         de: {
           aboutP1: '<strong>Shanghai Fairrich Industrial Co., Ltd.</strong> wurde im <strong>August 2010</strong> gegründet, ansässig in <strong>Lingang New Area, Pudong, Shanghai</strong>. Spezialisiert auf CNC-Abkantpressen, Schlagscheren, Laserschneider, Formen, Zapfsäulen und Zubehör.',
@@ -4991,13 +5006,14 @@ document.addEventListener('DOMContentLoaded', function() {
           adv4Title: 'Globaler Service', adv4Desc: 'Sitz in China, weltweiter Versand.',
           footerSlogan: 'Wir freuen uns auf eine langfristige Zusammenarbeit.<br>Kontaktieren Sie uns bei Fragen.<br>Vielen Dank für Ihr Vertrauen!',
           copyright: '© 2010 Shanghai Fairrich Industrial Co., Ltd. Alle Rechte vorbehalten',
-          contactPhone: '📞 Tel: ', contactMobile: '📱 Mobil: ', contactEmail: '📧 Email: ',
+          contactPhone: '📠 Fax: ', contactMobile: '📱 Mobil/WhatsApp: ', contactEmail: '📧 Email: ',
           contactAddr: '📍 Adresse: ', contactHours: '🕘 Stunden: ', contactWeb: '🌐 Web: ',
           addrText: 'Nr.333 Huanhu West 1st Rd, Lingang, Shanghai, China',
           hoursText: 'Mo-Fr 8:00-11:30 / 13:30-17:30', webText: 'www.fairrich.com',
           footerRep: '👤 Kontaktperson: ', footerPhone: '📞 Tel: ',
           logoText: '<span style="color:#1e3a5f;">FAIRRICH</span>',
-          footerLogo: 'FAIRRICH'
+          footerLogo: 'FAIRRICH',
+          noNews: 'Noch keine News'
         },
         es: {
           aboutP1: '<strong>Shanghai Fairrich Industrial Co., Ltd.</strong> fue fundada en <strong>agosto de 2010</strong>, ubicada en <strong>Lingang New Area, Pudong, Shanghái</strong>. Especializada en plegadoras CNC, cizallas, cortadoras láser, moldes, surtidores y accesorios.',
@@ -5012,13 +5028,14 @@ document.addEventListener('DOMContentLoaded', function() {
           adv4Title: 'Servicio Global', adv4Desc: 'Con sede en China, envíos a todo el mundo.',
           footerSlogan: 'Esperamos sinceramente una cooperación a largo plazo.<br>Contáctenos para cualquier consulta.<br>¡Gracias por su confianza!',
           copyright: '© 2010 Shanghai Fairrich Industrial Co., Ltd. Todos los derechos reservados',
-          contactPhone: '📞 Tel: ', contactMobile: '📱 Móvil: ', contactEmail: '📧 Email: ',
+          contactPhone: '📠 Fax: ', contactMobile: '📱 Móvil/WhatsApp: ', contactEmail: '📧 Email: ',
           contactAddr: '📍 Dirección: ', contactHours: '🕘 Horario: ', contactWeb: '🌐 Web: ',
           addrText: 'No.333 Huanhu West 1st Rd, Lingang, Shanghái, China',
           hoursText: 'Lun-Vie 8:00-11:30 / 13:30-17:30', webText: 'www.fairrich.com',
           footerRep: '👤 Contacto: ', footerPhone: '📞 Tel: ',
           logoText: '<span style="color:#1e3a5f;">FAIRRICH</span>',
-          footerLogo: 'FAIRRICH'
+          footerLogo: 'FAIRRICH',
+          noNews: 'Sin noticias aún'
         },
         pt: {
           aboutP1: '<strong>Shanghai Fairrich Industrial Co., Ltd.</strong> foi fundada em <strong>agosto de 2010</strong>, localizada em <strong>Lingang New Area, Pudong, Xangai</strong>. Especializada em dobradeiras CNC, guilhotinas, cortadoras a laser, moldes, bombas de combustível e acessórios.',
@@ -5033,13 +5050,14 @@ document.addEventListener('DOMContentLoaded', function() {
           adv4Title: 'Serviço Global', adv4Desc: 'Sede na China, envios para todo o mundo.',
           footerSlogan: 'Esperamos sinceramente uma cooperação de longo prazo.<br>Entre em contato para qualquer dúvida.<br>Obrigado pela sua confiança!',
           copyright: '© 2010 Shanghai Fairrich Industrial Co., Ltd. Todos os direitos reservados',
-          contactPhone: '📞 Tel: ', contactMobile: '📱 Cel: ', contactEmail: '📧 Email: ',
+          contactPhone: '📠 Fax: ', contactMobile: '📱 Cel/WhatsApp: ', contactEmail: '📧 Email: ',
           contactAddr: '📍 Endereço: ', contactHours: '🕘 Horário: ', contactWeb: '🌐 Web: ',
           addrText: 'No.333 Huanhu West 1st Rd, Lingang, Xangai, China',
           hoursText: 'Seg-Sex 8:00-11:30 / 13:30-17:30', webText: 'www.fairrich.com',
           footerRep: '👤 Contato: ', footerPhone: '📞 Tel: ',
           logoText: '<span style="color:#1e3a5f;">FAIRRICH</span>',
-          footerLogo: 'FAIRRICH'
+          footerLogo: 'FAIRRICH',
+          noNews: 'Sem notícias ainda'
         },
         ro: {
           aboutP1: '<strong>Shanghai Fairrich Industrial Co., Ltd.</strong> a fost fondată în <strong>august 2010</strong>, situată în <strong>Lingang New Area, Pudong, Shanghai</strong>. Specializată în prese de îndoit CNC, mașini de tăiat, tăietoare laser, matrițe, distribuitoare de combustibil și accesorii.',
@@ -5054,13 +5072,14 @@ document.addEventListener('DOMContentLoaded', function() {
           adv4Title: 'Serviciu Global', adv4Desc: 'Cu sediul în China, livrăm în toată lumea.',
           footerSlogan: 'Așteptăm cu nerăbdare o cooperare pe termen lung.<br>Contactați-ne pentru orice întrebări.<br>Vă mulțumim pentru încredere!',
           copyright: '© 2010 Shanghai Fairrich Industrial Co., Ltd. Toate drepturile rezervate',
-          contactPhone: '📞 Tel: ', contactMobile: '📱 Mobil: ', contactEmail: '📧 Email: ',
+          contactPhone: '📠 Fax: ', contactMobile: '📱 Mobil/WhatsApp: ', contactEmail: '📧 Email: ',
           contactAddr: '📍 Adresă: ', contactHours: '🕘 Program: ', contactWeb: '🌐 Web: ',
           addrText: 'Nr.333 Huanhu West 1st Rd, Lingang, Shanghai, China',
           hoursText: 'Lun-Vin 8:00-11:30 / 13:30-17:30', webText: 'www.fairrich.com',
           footerRep: '👤 Contact: ', footerPhone: '📞 Tel: ',
           logoText: '<span style="color:#1e3a5f;">FAIRRICH</span>',
-          footerLogo: 'FAIRRICH'
+          footerLogo: 'FAIRRICH',
+          noNews: 'Fără știri încă'
         },
         ru: {
           aboutP1: '<strong>Shanghai Fairrich Industrial Co., Ltd.</strong> основана в <strong>августе 2010 года</strong>, расположена в <strong>районе Линган, Пудун, Шанхай</strong>. Специализируемся на листогибах с ЧПУ, ножницах, лазерных резаках, пресс-формах, топливных колонках и комплектующих.',
@@ -5075,13 +5094,14 @@ document.addEventListener('DOMContentLoaded', function() {
           adv4Title: 'Глобальный сервис', adv4Desc: 'Офис в Китае, доставка по всему миру.',
           footerSlogan: 'Мы искренне надеемся на долгосрочное сотрудничество.<br>Свяжитесь с нами по любым вопросам.<br>Спасибо за доверие!',
           copyright: '© 2010 Shanghai Fairrich Industrial Co., Ltd. Все права защищены',
-          contactPhone: '📞 Тел: ', contactMobile: '📱 Моб: ', contactEmail: '📧 Email: ',
+          contactPhone: '📠 Факс: ', contactMobile: '📱 Моб/WhatsApp: ', contactEmail: '📧 Email: ',
           contactAddr: '📍 Адрес: ', contactHours: '🕘 Часы: ', contactWeb: '🌐 Сайт: ',
           addrText: 'No.333 Huanhu West 1st Rd, Lingang, Шанхай, Китай',
           hoursText: 'Пн-Пт 8:00-11:30 / 13:30-17:30', webText: 'www.fairrich.com',
           footerRep: '👤 Контакт: ', footerPhone: '📞 Тел: ',
           logoText: '<span style="color:#1e3a5f;">FAIRRICH</span>',
-          footerLogo: 'FAIRRICH'
+          footerLogo: 'FAIRRICH',
+          noNews: 'Новостей пока нет'
         }
       };
       var t = homeText[lang] || homeText['en'];
@@ -5153,12 +5173,19 @@ document.addEventListener('DOMContentLoaded', function() {
       if (footerLogoEl && t.footerLogo) footerLogoEl.textContent = t.footerLogo;
     }
     // ========== 语言切换时重新渲染 ==========
-    var originalSwitchLanguage = switchLanguage;
-    switchLanguage = function(lang) {
-      originalSwitchLanguage(lang);
-      updateHomeContent(lang);
-      renderNews();
-    };
+var originalSwitchLanguage = switchLanguage;
+switchLanguage = function(lang) {
+  originalSwitchLanguage(lang);
+  updateHomeContent(lang);
+  renderNews();
+  setTimeout(function() {
+    var d = translations[lang] || translations['en'];
+    var el = document.getElementById('newsEmptyText');
+    if (el) el.textContent = d.noNews || '暂无动态';
+    var el2 = document.getElementById('adminNoNewsText');
+    if (el2) el2.textContent = d.noNews || '暂无动态';
+  }, 600);
+};
 
     // ========== 初始化渲染 ==========
     document.addEventListener('DOMContentLoaded', function() {
@@ -5283,9 +5310,7 @@ document.addEventListener('DOMContentLoaded', function() {
         html += '<div class="admin-news-item"><span>' + item.date + ' - ' + (item.title || '') + '</span><button class="admin-btn-delete" onclick="deleteNewsItem(\'' + item.date + '\',\'' + (item.title || '').replace(/'/g, "\\'") + '\')">删除</button></div>';
       });
         } else {
-          html += '<p style="color:#94a3b8;font-size:0.85rem;">暂无动态</p>';
-        }
-        html += '</div>';
+html += '<p style="color:#94a3b8;font-size:0.85rem;" id="adminNoNewsText">' + ((translations[currentLang] || translations['en']).noNews || '暂无动态') + '</p>';        }        html += '</div>';
         html += '<div class="admin-news-list" style="margin-top:8px;"><strong style="font-size:0.95rem;">📩 客户留言</strong>';
         html += '<button id="adminCheckMsgs" style="padding:6px 14px;font-size:0.8rem;margin:8px 0;">查看留言</button>';
         html += '<div id="adminMsgsList" style="max-height:120px;overflow-y:auto;display:none;font-size:0.8rem;"></div>';
@@ -5349,8 +5374,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('adminLogoutBtn').onclick = function() { confirmLogout(); };
       }
 
-      loadNewsData();
 
+      loadNewsData();
+     if (lockBtn) lockBtn.style.display = 'none';
       if (secretBtn) {
         secretBtn.style.cursor = 'default';
         secretBtn.addEventListener('click', function(e) {
@@ -5683,7 +5709,7 @@ var seoKeywords = [
 
     var html = '';
     if (results.length === 0) {
-      html = '<p style="color:#7a9aaa;text-align:center;padding:40px;">' + (isZh ? '未找到相关产品，请尝试其他关键词或联系我们获取更多信息。' : 'No products found. Try another keyword or contact us for more info.') + '<br><br>📞 0086 21 5763 5090 | 📧 info@fairrich.com</p>';
+      html = '<p style="color:#7a9aaa;text-align:center;padding:40px;">' + (isZh ? '未找到相关产品，请尝试其他关键词或联系我们获取更多信息。' : 'No products found. Try another keyword or contact us for more info.') + '<br><br>📞 0086 137 6481 8151 | 📧 info@fairrich.com</p>';
     } else {
       results.forEach(function(item) {
         var highlightedName = item.name.replace(new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<span style="background:#fff3b0;padding:0 2px;border-radius:2px;">$1</span>');
